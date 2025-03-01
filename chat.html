@@ -20,19 +20,39 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
+            overflow: hidden;
         }
 
+        /* الهيدر */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: start;
+            background-color: #ff6f61;
+            color: white;
+            padding: 15px;
+            font-size: 20px;
+        }
+
+        .back-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+
+        /* كونتينر المحادثة */
         .chat-container {
             flex-grow: 1;
             overflow-y: auto;
-            padding: 10px;
+            padding: 15px;
             background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            margin: 20px;
+            width: 100%;
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 130px); /* تثبيت المساحة للشريط السفلي */
+            height: calc(100vh - 130px); /* طرح ارتفاع الهيدر والشريط السفلي */
         }
 
         .chat-message {
@@ -40,6 +60,8 @@
             margin: 5px 0;
             border-radius: 10px;
             max-width: 70%;
+            font-size: 16px;
+            white-space: pre-line;
         }
 
         .user-message {
@@ -54,6 +76,7 @@
             align-self: flex-start;
         }
 
+        /* شريط الإدخال */
         .input-container {
             display: flex;
             align-items: center;
@@ -98,30 +121,29 @@
             background-color: #e85a4f;
         }
 
-        .back-button {
-            background-color: #6c757d;
-            color: white;
-        }
-
-        .back-button:hover {
-            background-color: #5a6268;
+        /* تأثير الكتابة */
+        @keyframes typing {
+            from { width: 0; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container mt-5">
-        <h1 class="text-center">الدردشة مع البوت</h1>
-        <div class="chat-container" id="chatContainer">
-            <!-- رسائل المحادثة سيتم إضافتها هنا -->
-        </div>
+    <!-- الهيدر -->
+    <div class="header">
+        <button class="back-button" id="backButton">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        الدردشة مع البوت
+    </div>
+
+    <!-- كونتينر المحادثة -->
+    <div class="chat-container" id="chatContainer">
+        <!-- رسائل المحادثة ستظهر هنا -->
     </div>
 
     <!-- شريط الإدخال -->
     <div class="input-container">
-        <button class="button back-button" id="backButton">
-            <i class="fas fa-arrow-left"></i>
-        </button>
         <input type="text" id="userInput" placeholder="أدخل رسالتك هنا..." />
         <button class="button send-button" id="sendButton">
             <i class="fas fa-paper-plane"></i>
@@ -167,10 +189,30 @@
             const messageDiv = document.createElement("div");
 
             messageDiv.classList.add("chat-message", sender === 'user' ? "user-message" : "bot-message");
-            messageDiv.textContent = message;
+
+            if (sender === 'bot') {
+                typeMessage(message, messageDiv);
+            } else {
+                messageDiv.textContent = message;
+            }
 
             chatContainer.appendChild(messageDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function typeMessage(text, element) {
+            let index = 0;
+            element.textContent = "";
+
+            function typeNextLetter() {
+                if (index < text.length) {
+                    element.textContent += text.charAt(index);
+                    index++;
+                    setTimeout(typeNextLetter, 30);
+                }
+            }
+
+            typeNextLetter();
         }
 
         async function sendMessage() {
