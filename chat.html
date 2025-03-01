@@ -32,7 +32,7 @@
             margin: 20px;
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 130px); /* لتثبيت المساحة للشريط السفلي */
+            height: calc(100vh - 130px);
         }
 
         .chat-message {
@@ -64,7 +64,6 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            background-color: #fff;
         }
 
         .input-container input {
@@ -110,11 +109,11 @@
     <div class="container mt-5">
         <h1 class="text-center">الدردشة مع البوت</h1>
         <div class="chat-container" id="chatContainer">
-            <!-- رسائل المحادثة سيتم إضافتها هنا -->
+            <!-- رسائل المحادثة ستظهر هنا -->
         </div>
     </div>
 
-    <!-- شريط الإدخال ثابت أسفل الصفحة -->
+    <!-- شريط الإدخال -->
     <div class="input-container">
         <a class="back-button" href="index.html" id="backButton"><i class="fas fa-arrow-left"></i></a>
         <input type="text" id="userInput" placeholder="أدخل رسالتك هنا..." />
@@ -122,13 +121,11 @@
     </div>
 
     <script>
-        // دالة الاتصال بـ DeepSeek API
         async function getBotReply(userMessage) {
-            const apiUrl = 'https://api.deepseek.com/v1/chat'; // استبدل بـ URL الخاص بـ DeepSeek API
-            const apiKey = 'sk-ae2b9e0bdac946e0afc4433df4802b5a'; // استبدل بـ API Key الخاص بك
+            const apiUrl = 'https://api.deepseek.com/chat/completions';
+            const apiKey = 'sk-ae2b9e0bdac946e0afc4433df4802b5a'; // استبدل بمفتاح API الصحيح
 
             try {
-                // إرسال الطلب إلى API
                 const response = await fetch(apiUrl, {
                     method: 'POST',
                     headers: {
@@ -136,27 +133,28 @@
                         'Authorization': `Bearer ${apiKey}`,
                     },
                     body: JSON.stringify({
-                        message: userMessage
+                        model: "deepseek-chat",
+                        messages: [
+                            { "role": "system", "content": "أنت مساعد ذكي." },
+                            { "role": "user", "content": userMessage }
+                        ],
+                        stream: false
                     }),
                 });
 
-                // التأكد من نجاح الطلب
                 if (!response.ok) {
-                    throw new Error('فشل في الاتصال بـ API');
+                    const errorMessage = await response.text();
+                    throw new Error(`خطأ في API: ${response.status} - ${errorMessage}`);
                 }
 
-                // تحويل البيانات إلى JSON
                 const data = await response.json();
-
-                // إرجاع الرد من البوت
-                return data.reply;  // استبدل "reply" بما يتناسب مع هيكل الاستجابة الفعلي لـ DeepSeek
+                return data.choices[0].message.content;
             } catch (error) {
                 console.error('حدث خطأ:', error);
                 return 'عذرًا، حدث خطأ أثناء التواصل مع البوت.';
             }
         }
 
-        // إضافة رسالة إلى واجهة المستخدم
         function addMessage(message, sender) {
             const chatContainer = document.getElementById("chatContainer");
             const messageDiv = document.createElement("div");
@@ -165,41 +163,31 @@
             messageDiv.textContent = message;
 
             chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;  // للتمرير إلى أسفل عند إضافة رسالة جديدة
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // دالة إرسال الرسالة
         async function sendMessage() {
             const userInput = document.getElementById("userInput");
             const message = userInput.value.trim();
             if (message) {
-                // عرض رسالة المستخدم
                 addMessage(message, 'user');
-                userInput.value = ''; // مسح حقل الإدخال
+                userInput.value = '';
 
-                // إرسال الرسالة إلى الذكاء الاصطناعي
-                const botReply = await getBotReply(message); // جلب الرد من API
+                const botReply = await getBotReply(message);
                 addMessage(botReply, 'bot');
             }
         }
 
-        // دالة رجوع
         function goBack() {
-            const chatContainer = document.getElementById("chatContainer");
-            chatContainer.innerHTML = '';  // مسح جميع الرسائل من المحادثة
+            document.getElementById("chatContainer").innerHTML = '';
         }
 
-        // استماع لحدث إرسال الرسالة عند الضغط على زر الإرسال
         document.getElementById("sendButton").addEventListener("click", sendMessage);
-
-        // استماع لحدث إرسال الرسالة عند الضغط على زر Enter
         document.getElementById("userInput").addEventListener("keypress", function (e) {
             if (e.key === "Enter") {
                 sendMessage();
             }
         });
-
-        // استماع لحدث زر الرجوع
         document.getElementById("backButton").addEventListener("click", goBack);
     </script>
 
