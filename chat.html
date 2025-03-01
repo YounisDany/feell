@@ -32,7 +32,7 @@
             margin: 20px;
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 130px);
+            height: calc(100vh - 130px); /* تثبيت المساحة للشريط السفلي */
         }
 
         .chat-message {
@@ -56,47 +56,51 @@
 
         .input-container {
             display: flex;
+            align-items: center;
             padding: 10px;
             background-color: #fff;
             border-top: 1px solid #ccc;
-            justify-content: space-between;
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
+            justify-content: space-between;
         }
 
         .input-container input {
-            width: 70%;
-            padding: 10px;
+            flex-grow: 1;
+            padding: 12px;
             border-radius: 20px;
             border: 1px solid #ccc;
             font-size: 16px;
+            margin: 0 10px;
         }
 
-        .input-container button {
-            width: 10%;
-            background-color: #ff6f61;
-            border: none;
-            color: white;
+        .button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             font-size: 20px;
+            border: none;
             cursor: pointer;
+            transition: 0.3s;
         }
 
-        .input-container button:hover {
+        .send-button {
+            background-color: #ff6f61;
+            color: white;
+        }
+
+        .send-button:hover {
             background-color: #e85a4f;
         }
 
         .back-button {
-            width: 10%;
             background-color: #6c757d;
-            border: none;
             color: white;
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-            margin-left: 10px;
         }
 
         .back-button:hover {
@@ -109,20 +113,24 @@
     <div class="container mt-5">
         <h1 class="text-center">الدردشة مع البوت</h1>
         <div class="chat-container" id="chatContainer">
-            <!-- رسائل المحادثة ستظهر هنا -->
+            <!-- رسائل المحادثة سيتم إضافتها هنا -->
         </div>
     </div>
 
     <!-- شريط الإدخال -->
     <div class="input-container">
-        <a class="back-button" href="index.html" id="backButton"><i class="fas fa-arrow-left"></i></a>
+        <button class="button back-button" id="backButton">
+            <i class="fas fa-arrow-left"></i>
+        </button>
         <input type="text" id="userInput" placeholder="أدخل رسالتك هنا..." />
-        <button id="sendButton"><i class="fas fa-paper-plane"></i></button>
+        <button class="button send-button" id="sendButton">
+            <i class="fas fa-paper-plane"></i>
+        </button>
     </div>
 
     <script>
         async function getBotReply(userMessage) {
-            const apiUrl = 'https://api.deepseek.com/chat/completions';
+            const apiUrl = 'https://api.deepseek.com/chat/completions'; 
             const apiKey = 'sk-ae2b9e0bdac946e0afc4433df4802b5a'; // استبدل بمفتاح API الصحيح
 
             try {
@@ -135,7 +143,7 @@
                     body: JSON.stringify({
                         model: "deepseek-chat",
                         messages: [
-                            { "role": "system", "content": "أنت مساعد ذكي." },
+                            { "role": "system", "content": "أنت مساعد ذكي جاهز لمساعدة المستخدم." },
                             { "role": "user", "content": userMessage }
                         ],
                         stream: false
@@ -143,12 +151,11 @@
                 });
 
                 if (!response.ok) {
-                    const errorMessage = await response.text();
-                    throw new Error(`خطأ في API: ${response.status} - ${errorMessage}`);
+                    throw new Error('فشل في الاتصال بـ API');
                 }
 
                 const data = await response.json();
-                return data.choices[0].message.content;
+                return data.choices[0].message.content || "لم أفهم السؤال، حاول مرة أخرى!";
             } catch (error) {
                 console.error('حدث خطأ:', error);
                 return 'عذرًا، حدث خطأ أثناء التواصل مع البوت.';
@@ -179,7 +186,7 @@
         }
 
         function goBack() {
-            document.getElementById("chatContainer").innerHTML = '';
+            window.location.href = "index.html";
         }
 
         document.getElementById("sendButton").addEventListener("click", sendMessage);
