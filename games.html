@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الألعاب</title>
+    <title>لعبة الإيموجي</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -47,11 +47,50 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            flex-direction: column;
         }
-        .game-iframe {
+        .emoji-game {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
             width: 100%;
-            height: 100%;
+        }
+        .emoji {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+        .options {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .options button {
+            padding: 10px 20px;
+            font-size: 1.2rem;
             border: none;
+            border-radius: 5px;
+            background-color: #4e6dde;
+            color: white;
+            cursor: pointer;
+        }
+        .options button:hover {
+            background-color: #3a5bbf;
+        }
+        .result {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+        .score {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        .timer {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
         }
     </style>
 </head>
@@ -64,7 +103,15 @@
 
     <!-- Game content -->
     <div class="game-container">
-        <iframe src="https://playhop.com/" class="game-iframe"></iframe>
+        <div class="emoji-game">
+            <div class="score" id="score">الإجابات الصحيحة: 0</div>
+            <div class="timer" id="timer">الوقت المتبقي: 10 ثواني</div>
+            <div class="emoji" id="emoji">😊</div>
+            <div class="options" id="options">
+                <!-- سيتم ملء الخيارات هنا ديناميكيًا -->
+            </div>
+            <div class="result" id="result"></div>
+        </div>
     </div>
 
     <!-- Bottom navigation bar -->
@@ -75,5 +122,102 @@
         <a href="games.html"><i class="fas fa-gamepad"></i><br>الألعاب</a>
     </nav>
 
+    <script>
+        // قائمة الإيموجيات والمشاعر المرتبطة بها
+        const emojis = [
+            { emoji: "😊", feeling: "سعيد" },
+            { emoji: "😢", feeling: "حزين" },
+            { emoji: "😡", feeling: "غاضب" },
+            { emoji: "😭", feeling: "يبكي" },
+            { emoji: "😴", feeling: "نعسان" },
+            { emoji: "😍", feeling: "عاشق" },
+            { emoji: "🤔", feeling: "متفكر" },
+            { emoji: "😱", feeling: "خائف" },
+        ];
+
+        let currentEmoji;
+        let score = 0;
+        let timeLeft = 10;
+        let timer;
+
+        // اختيار إيموجي عشوائي
+        function getRandomEmoji() {
+            const randomIndex = Math.floor(Math.random() * emojis.length);
+            currentEmoji = emojis[randomIndex];
+            document.getElementById("emoji").textContent = currentEmoji.emoji;
+            document.getElementById("result").textContent = "";
+            updateOptions(); // تحديث الخيارات
+            resetTimer();
+        }
+
+        // إنشاء خيارات عشوائية
+        function updateOptions() {
+            const optionsContainer = document.getElementById("options");
+            optionsContainer.innerHTML = ""; // مسح الخيارات السابقة
+
+            // إنشاء قائمة خيارات تحتوي على الإجابة الصحيحة + 3 إجابات عشوائية أخرى
+            const options = [currentEmoji.feeling];
+            while (options.length < 4) {
+                const randomFeeling = emojis[Math.floor(Math.random() * emojis.length)].feeling;
+                if (!options.includes(randomFeeling)) {
+                    options.push(randomFeeling);
+                }
+            }
+
+            // خلط الخيارات عشوائيًا
+            options.sort(() => Math.random() - 0.5);
+
+            // إضافة الخيارات إلى الواجهة
+            options.forEach((option) => {
+                const button = document.createElement("button");
+                button.textContent = option;
+                button.onclick = () => checkAnswer(option);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        // التحقق من الإجابة
+        function checkAnswer(answer) {
+            const resultElement = document.getElementById("result");
+            if (answer === currentEmoji.feeling) {
+                resultElement.textContent = "إجابة صحيحة! 🎉";
+                resultElement.style.color = "green";
+                score++;
+            } else {
+                resultElement.textContent = `إجابة خاطئة! الإجابة الصحيحة هي: ${currentEmoji.feeling} ❌`;
+                resultElement.style.color = "red";
+            }
+            document.getElementById("score").textContent = `الإجابات الصحيحة: ${score}`;
+            setTimeout(getRandomEmoji, 1500); // تغيير الإيموجي بعد 1.5 ثانية
+        }
+
+        // بدء المؤقت
+        function startTimer() {
+            timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timer").textContent = `الوقت المتبقي: ${timeLeft} ثواني`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    document.getElementById("result").textContent = "انتهى الوقت! ⏰";
+                    document.getElementById("result").style.color = "red";
+                    setTimeout(getRandomEmoji, 1500);
+                }
+            }, 1000);
+        }
+
+        // إعادة تعيين المؤقت
+        function resetTimer() {
+            clearInterval(timer);
+            timeLeft = 50;
+            document.getElementById("timer").textContent = `الوقت المتبقي: ${timeLeft} ثواني`;
+            startTimer();
+        }
+
+        // بدء اللعبة
+        window.onload = () => {
+            getRandomEmoji();
+            startTimer();
+        };
+    </script>
 </body>
 </html>
