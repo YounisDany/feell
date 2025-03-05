@@ -74,22 +74,26 @@
         }
     </style>
 <script>
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js')
-    .then(() => console.log("Service Worker Registered"))
-    .catch(error => console.log("Service Worker Registration Failed:", error));
+    .then(() => console.log("تم تسجيل Service Worker"))
+    .catch(error => console.log("فشل تسجيل Service Worker:", error));
 }
 
 let deferredPrompt;
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
+  showInstallPrompt();
+});
 
+function showInstallPrompt() {
   let installBanner = document.createElement("div");
   installBanner.innerHTML = `
-    <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #007bff; color: #fff; padding: 10px 20px; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.2);">
-      <p>يامرحبا فيك، اللحين تقدر تثبت الموقع بجوالك</p>
-      <button id="installBtn" style="background: #fff; color: #007bff; border: none; padding: 5px 10px; margin-top: 5px; cursor: pointer; border-radius: 3px;">تثبيت</button>
+    <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #007bff; color: #fff; padding: 15px 20px; border-radius: 10px; box-shadow: 0px 4px 6px rgba(0,0,0,0.2); text-align: center;">
+      <p style="margin: 0; font-size: 16px;">✨ هل تريد تثبيت التطبيق على جهازك؟</p>
+      <button id="installBtn" style="background: #fff; color: #007bff; border: none; padding: 8px 15px; margin-top: 5px; cursor: pointer; border-radius: 5px; font-weight: bold;">تثبيت</button>
     </div>
   `;
   document.body.appendChild(installBanner);
@@ -99,14 +103,16 @@ window.addEventListener("beforeinstallprompt", (e) => {
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then((choiceResult) => {
       if (choiceResult.outcome === "accepted") {
-        console.log("المستخدم وافق على التثبيت");
+        console.log("✅ المستخدم وافق على التثبيت");
       } else {
-        console.log("المستخدم رفض التثبيت");
+        console.log("❌ المستخدم رفض التثبيت");
       }
       deferredPrompt = null;
     });
   });
-});
+}
+ console.log("❌ المستخدم رفض التثبيت");
+
 </script>
 
 </head>
