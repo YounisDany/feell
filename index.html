@@ -82,36 +82,26 @@ if ('serviceWorker' in navigator) {
 }
 
 let deferredPrompt;
+const installButton = document.getElementById("installBtn");
+
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
-  showInstallPrompt();
+  installButton.style.display = "block"; // إظهار الزر عند توفر التثبيت
 });
 
-function showInstallPrompt() {
-  let installBanner = document.createElement("div");
-  installBanner.innerHTML = `
-    <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #007bff; color: #fff; padding: 15px 20px; border-radius: 10px; box-shadow: 0px 4px 6px rgba(0,0,0,0.2); text-align: center;">
-      <p style="margin: 0; font-size: 16px;">✨ هل تريد تثبيت التطبيق على جهازك؟</p>
-      <button id="installBtn" style="background: #fff; color: #007bff; border: none; padding: 8px 15px; margin-top: 5px; cursor: pointer; border-radius: 5px; font-weight: bold;">تثبيت</button>
-    </div>
-  `;
-  document.body.appendChild(installBanner);
-
-  document.getElementById("installBtn").addEventListener("click", () => {
-    installBanner.remove();
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then((choiceResult) => {
-      if (choiceResult.outcome === "accepted") {
-        console.log("✅ المستخدم وافق على التثبيت");
-      } else {
-        console.log("❌ المستخدم رفض التثبيت");
-      }
-      deferredPrompt = null;
-    });
+installButton.addEventListener("click", () => {
+  installButton.style.display = "none"; // إخفاء الزر بعد الضغط
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then((choiceResult) => {
+    if (choiceResult.outcome === "accepted") {
+      console.log("✅ المستخدم وافق على التثبيت");
+    } else {
+      console.log("❌ المستخدم رفض التثبيت");
+    }
+    deferredPrompt = null;
   });
-}
- console.log("❌ المستخدم رفض التثبيت");
+});
 
 </script>
 
@@ -120,6 +110,9 @@ function showInstallPrompt() {
     <div class="container mt-5">
         <h1 class="animate__animated animate__fadeInDown">مرحبًا بك في تطبيق "عبر عن مشاعرك"</h1>
         <p class="animate__animated animate__fadeInUp">اختر التعبير عن مشاعرك عبر الصور التالية:</p>
+<button id="installBtn" style="display: none; background: #007bff; color: #fff; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-size: 16px;">
+  📥 تثبيت التطبيق
+</button>
 
         <div class="emoji-container">
      
