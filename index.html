@@ -72,49 +72,36 @@
             0% { transform: translateY(0); opacity: 1; }
             100% { transform: translateY(100vh); opacity: 0; }
         }
-   #installBtn {
-            display: none;
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 18px;
-            cursor: pointer;
-            border-radius: 5px;
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  
     </style>
 <script>
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js')
-    .then(() => console.log("تم تسجيل Service Worker"))
-    .catch(error => console.log("فشل تسجيل Service Worker:", error));
-}
+     // هذا الحدث يتم تشغيله عندما يكون الموقع قابلاً للتثبيت
+        let deferredPrompt;
 
-let deferredPrompt;
-const installButton = document.getElementById("installBtn");
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // منع المتصفح من العرض التلقائي للتثبيت
+            e.preventDefault();
+            // حفظ الحدث ليتم استخدامه لاحقًا
+            deferredPrompt = e;
 
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  installButton.style.display = "block"; // إظهار الزر عند توفر التثبيت
-});
+            // عرض نافذة تأكيد للمستخدم
+            const userConsent = confirm("هل تريد تثبيت الموقع على الصفحة الرئيسية؟");
 
-installButton.addEventListener("click", () => {
-  installButton.style.display = "none"; // إخفاء الزر بعد الضغط
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then((choiceResult) => {
-    if (choiceResult.outcome === "accepted") {
-      console.log("✅ المستخدم وافق على التثبيت");
-    } else {
-      console.log("❌ المستخدم رفض التثبيت");
-    }
-    deferredPrompt = null;
-  });
-});
+            if (userConsent) {
+                // عرض prompt التثبيت
+                deferredPrompt.prompt();
+                // انتظار اختيار المستخدم
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('وافق المستخدم على تثبيت الموقع');
+                    } else {
+                        console.log('رفض المستخدم تثبيت الموقع');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        });
 
 </script>
 
@@ -123,9 +110,7 @@ installButton.addEventListener("click", () => {
     <div class="container mt-5">
         <h1 class="animate__animated animate__fadeInDown">مرحبًا بك في تطبيق "عبر عن مشاعرك"</h1>
         <p class="animate__animated animate__fadeInUp">اختر التعبير عن مشاعرك عبر الصور التالية:</p>
-<button id="installBtn">
-  📥 تثبيت التطبيق
-</button>
+
 
         <div class="emoji-container">
      
