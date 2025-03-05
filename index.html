@@ -73,6 +73,42 @@
             100% { transform: translateY(100vh); opacity: 0; }
         }
     </style>
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js')
+    .then(() => console.log("Service Worker Registered"))
+    .catch(error => console.log("Service Worker Registration Failed:", error));
+}
+
+let deferredPrompt;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  let installBanner = document.createElement("div");
+  installBanner.innerHTML = `
+    <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #007bff; color: #fff; padding: 10px 20px; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.2);">
+      <p>يامرحبا فيك، اللحين تقدر تثبت الموقع بجوالك</p>
+      <button id="installBtn" style="background: #fff; color: #007bff; border: none; padding: 5px 10px; margin-top: 5px; cursor: pointer; border-radius: 3px;">تثبيت</button>
+    </div>
+  `;
+  document.body.appendChild(installBanner);
+
+  document.getElementById("installBtn").addEventListener("click", () => {
+    installBanner.remove();
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === "accepted") {
+        console.log("المستخدم وافق على التثبيت");
+      } else {
+        console.log("المستخدم رفض التثبيت");
+      }
+      deferredPrompt = null;
+    });
+  });
+});
+</script>
+
 </head>
 <body>
     <div class="container mt-5">
@@ -158,35 +194,7 @@ if ('serviceWorker' in navigator) {
     .then(() => console.log("Service Worker Registered"))
     .catch(error => console.log("Service Worker Registration Failed:", error));
 }
-<script>
-let deferredPrompt;
-window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
 
-  let installBanner = document.createElement("div");
-  installBanner.innerHTML = `
-    <div style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #007bff; color: #fff; padding: 10px 20px; border-radius: 5px; box-shadow: 0px 4px 6px rgba(0,0,0,0.2);">
-      <p>يامرحبا فيك  اللحين تقدر تثبت الموقع بجوالك </p>
-      <button id="installBtn" style="background: #fff; color: #007bff; border: none; padding: 5px 10px; margin-top: 5px; cursor: pointer; border-radius: 3px;">تثبيت</button>
-    </div>
-  `;
-  document.body.appendChild(installBanner);
-
-  document.getElementById("installBtn").addEventListener("click", () => {
-    installBanner.remove();
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then((choiceResult) => {
-      if (choiceResult.outcome === "accepted") {
-        console.log("المستخدم وافق على التثبيت");
-      } else {
-        console.log("المستخدم رفض التثبيت");
-      }
-      deferredPrompt = null;
-    });
-  });
-});
-</script>
 
 </script>
 
