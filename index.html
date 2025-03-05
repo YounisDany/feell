@@ -187,34 +187,6 @@
         }
 
     
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js')
-    .then(() => console.log("Service Worker Registered"))
-    .catch(error => console.log("Service Worker Registration Failed:", error));
-}
-      let deferredPrompt;
-        const installButton = document.getElementById("installBtn");
-
-        window.addEventListener("beforeinstallprompt", (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installButton.style.display = "block"; // إظهار الزر عند توفر التثبيت
-        });
-
-        installButton.addEventListener("click", () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === "accepted") {
-                        console.log("✅ تم تثبيت التطبيق بنجاح");
-                    } else {
-                        console.log("❌ رفض المستخدم التثبيت");
-                    }
-                    deferredPrompt = null;
-                    installButton.style.display = "none"; // إخفاء الزر بعد التثبيت
-                });
-            }
-        });
 
 </script>
 
