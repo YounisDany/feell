@@ -14,7 +14,6 @@
             background-color: #f0f8ff;
             padding: 0;
             margin: 0;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
             height: 100vh;
@@ -44,9 +43,28 @@
             border-radius: 10px;
             margin-bottom: 5vh;
         }
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-gap: 5px;
+            margin: 20px 0;
+        }
+        .calendar div {
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+            background-color: #eaeaea;
+            cursor: pointer;
+        }
+        .selected {
+            background-color: #4caf50;
+            color: white;
+        }
     </style>
 </head>
 <body>
+    <div class="calendar" id="calendar"></div>
+    
     <div class="swiper">
         <div class="swiper-wrapper">
             <div class="swiper-slide">😀</div>
@@ -75,7 +93,33 @@
     <script>
         const emojis = ["😀", "😊", "😌", "😢", "😡"];
         let selectedMood = emojis[0];
-        
+        let selectedDate = null;
+
+        // Initialize the calendar
+        function generateCalendar() {
+            let today = new Date();
+            let daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+            let calendarDiv = document.getElementById("calendar");
+            calendarDiv.innerHTML = "";
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                let dayDiv = document.createElement("div");
+                dayDiv.textContent = i;
+                dayDiv.onclick = function() {
+                    selectDate(i);
+                };
+                calendarDiv.appendChild(dayDiv);
+            }
+        }
+
+        function selectDate(day) {
+            let allDays = document.querySelectorAll(".calendar div");
+            allDays.forEach(dayDiv => dayDiv.classList.remove("selected"));
+            selectedDate = new Date(new Date().getFullYear(), new Date().getMonth(), day);
+            let selectedDayDiv = allDays[day - 1];
+            selectedDayDiv.classList.add("selected");
+        }
+
         var swiper = new Swiper('.swiper', {
             slidesPerView: 1,
             centeredSlides: true,
@@ -91,16 +135,23 @@
                 }
             }
         });
-        
+
         function saveMood() {
-            let date = new Date().toLocaleDateString();
+            if (!selectedDate) {
+                alert("من فضلك اختر يوم من التقويم.");
+                return;
+            }
+
             let reason = document.getElementById("reason").value;
-            let entry = `${date}: ${selectedMood} - ${reason}`;
+            let entry = `${selectedDate.toLocaleDateString()}: ${selectedMood} - ${reason}`;
             
             let moods = JSON.parse(localStorage.getItem("moods")) || [];
             moods.push(entry);
             localStorage.setItem("moods", JSON.stringify(moods));
         }
+
+        // Generate the calendar on load
+        generateCalendar();
     </script>
 </body>
 </html>
