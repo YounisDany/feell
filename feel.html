@@ -131,8 +131,10 @@
                 }
 
                 dayDiv.onclick = function() {
-                    if (!currentDay > today) {
+                    if (currentDay <= today) {
                         selectDate(i);
+                    } else {
+                        alert("لا يمكنك تحديد يوم في المستقبل.");
                     }
                 };
                 calendarDiv.appendChild(dayDiv);
