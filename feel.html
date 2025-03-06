@@ -71,10 +71,31 @@
             font-size: 20px;
             margin-left: 10px;
         }
+        .back-button {
+    position: fixed;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border-radius: 50%;
+    font-size: 20px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    transition: background 0.3s;
+}
+
+.back-button:hover {
+    background: #0056b3;
+    text-decoration: none;
+}
     </style>
 </head>
 <body>
- 
+ <a href="javascript:history.back()" class="back-button">
+    <i class="fas fa-arrow-right"></i>
+</a>
     
     <div class="swiper">
         <div class="swiper-wrapper">
