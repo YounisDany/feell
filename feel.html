@@ -60,6 +60,17 @@
             background-color: #4caf50;
             color: white;
         }
+        .disabled {
+            background-color: #d3d3d3;
+            cursor: not-allowed;
+        }
+        .saved {
+            background-color: #ffeb3b;
+        }
+        .emoji {
+            font-size: 20px;
+            margin-left: 10px;
+        }
     </style>
 </head>
 <body>
@@ -104,9 +115,25 @@
 
             for (let i = 1; i <= daysInMonth; i++) {
                 let dayDiv = document.createElement("div");
+                let currentDay = new Date(today.getFullYear(), today.getMonth(), i);
+
+                // Check if the day is in the past or future
+                if (currentDay > today) {
+                    dayDiv.classList.add("disabled"); // Disable future days
+                }
+
+                // Add emoji if the mood is saved for this day
+                let savedMood = getSavedMood(i);
                 dayDiv.textContent = i;
+                if (savedMood) {
+                    dayDiv.classList.add("saved");
+                    dayDiv.innerHTML = `${i}<span class="emoji">${savedMood}</span>`;
+                }
+
                 dayDiv.onclick = function() {
-                    selectDate(i);
+                    if (!currentDay > today) {
+                        selectDate(i);
+                    }
                 };
                 calendarDiv.appendChild(dayDiv);
             }
@@ -118,6 +145,18 @@
             selectedDate = new Date(new Date().getFullYear(), new Date().getMonth(), day);
             let selectedDayDiv = allDays[day - 1];
             selectedDayDiv.classList.add("selected");
+        }
+
+        // Get saved mood for a particular day
+        function getSavedMood(day) {
+            let moods = JSON.parse(localStorage.getItem("moods")) || [];
+            let date = new Date(new Date().getFullYear(), new Date().getMonth(), day).toLocaleDateString();
+            for (let mood of moods) {
+                if (mood.startsWith(date)) {
+                    return mood.split(":")[1].split("-")[0].trim();
+                }
+            }
+            return null;
         }
 
         var swiper = new Swiper('.swiper', {
@@ -148,6 +187,7 @@
             let moods = JSON.parse(localStorage.getItem("moods")) || [];
             moods.push(entry);
             localStorage.setItem("moods", JSON.stringify(moods));
+            generateCalendar(); // Re-generate calendar to show saved mood
         }
 
         // Generate the calendar on load
