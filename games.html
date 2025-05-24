@@ -43,6 +43,40 @@
             align-items: center;
         }
         
+        .next-question-btn {
+    background: linear-gradient(to right, #6a5acd, #9370db);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.next-question-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(to right, #5a4abc, #8360cb);
+}
+
+.next-question-btn:active {
+    transform: translateY(1px);
+}
+
+.next-question-btn i {
+    transition: transform 0.3s ease;
+}
+
+.next-question-btn:hover i {
+    transform: translateX(-5px);
+}
         .back-btn, .skip-btn {
             background-color: white;
             color: var(--primary-color);
@@ -330,6 +364,9 @@
             </div>
             
             <div class="result animate__animated" id="result"></div>
+            <button id="nextBtn" class="next-question-btn animate__animated animate__fadeIn">
+    <i class="fas fa-arrow-left"></i> السؤال التالي
+</button>
         </div>
     </div>
 
@@ -655,6 +692,31 @@
             // تمييز الصفحة الحالية في القائمة السفلية
             document.querySelector(`.bottom-nav a[href="games.html"]`).classList.add('active');
         };
+        document.getElementById('nextBtn').addEventListener('click', goToNextQuestion);
+
+function goToNextQuestion() {
+    // إخفاء الزر مؤقتًا لمنع النقر المتكرر
+    const btn = document.getElementById('nextBtn');
+    btn.style.display = 'none';
+    
+    // إضافة تأثير اختفاء
+    btn.classList.remove('animate__fadeIn');
+    btn.classList.add('animate__fadeOut');
+    
+    // الانتقال للسؤال التالي بعد نصف ثانية
+    setTimeout(() => {
+        currentQuestion++;
+        
+        if (currentQuestion > totalQuestions) {
+            endGame();
+        } else {
+            getRandomEmoji();
+            btn.classList.remove('animate__fadeOut');
+            btn.classList.add('animate__fadeIn');
+            btn.style.display = 'flex';
+        }
+    }, 500);
+}
     </script>
 </body>
 </html>
