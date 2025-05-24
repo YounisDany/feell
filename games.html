@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,117 +9,329 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://code.responsivevoice.org/responsivevoice.js?key=iQqyDrUh"></script>
 
     <style>
+        :root {
+            --primary-color: #6a5acd;
+            --secondary-color: #9370db;
+            --accent-color: #ff69b4;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
         body {
             font-family: 'Tajawal', sans-serif;
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             text-align: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 70px;
         }
-        .header, .bottom-nav {
-            position: fixed;
-            width: 100%;
-            z-index: 10;
-        }
+        
         .header {
+            position: fixed;
             top: 0;
-            background-color: #4e6dde;
-            padding: 10px;
+            width: 100%;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
+        
+        .back-btn {
+            background-color: white;
+            color: var(--primary-color);
+            border: none;
+            border-radius: 30px;
+            padding: 8px 15px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
         .bottom-nav {
+            position: fixed;
             bottom: 0;
-            background: #4e6dde;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
             text-align: center;
             padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            border-radius: 20px 20px 0 0;
         }
+        
         .bottom-nav a {
             color: white;
             text-decoration: none;
             padding: 10px 15px;
             display: inline-block;
-            font-size: 18px;
+            font-size: 13px;
+            transition: all 0.3s ease;
         }
+        
+        .bottom-nav a i {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .bottom-nav a:hover {
+            transform: translateY(-5px);
+        }
+        
+        .bottom-nav a:hover i {
+            transform: scale(1.2);
+            color: var(--accent-color);
+        }
+        
         .game-container {
-            margin-top: 60px;
-            margin-bottom: 60px;
-            height: calc(100vh - 120px);
+            margin-top: 70px;
+            margin-bottom: 70px;
+            height: calc(100vh - 140px);
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
-        }
-        .emoji-game {
-            background: white;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .emoji-game {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
             max-width: 500px;
             width: 100%;
+            animation: fadeInUp 0.5s ease-out;
         }
+        
         .emoji {
-            font-size: 5rem;
-            margin-bottom: 20px;
+            font-size: 6rem;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
         }
+        
         .options {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             justify-content: center;
             flex-wrap: wrap;
+            margin: 20px 0;
         }
+        
         .options button {
-            padding: 10px 20px;
-            font-size: 1.2rem;
+            padding: 12px 25px;
+            font-size: 1.1rem;
             border: none;
-            border-radius: 5px;
-            background-color: #4e6dde;
+            border-radius: 50px;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
             cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
+        
         .options button:hover {
-            background-color: #3a5bbf;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
+        
+        .options button:active {
+            transform: translateY(1px);
+        }
+        
         .result {
             margin-top: 20px;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: bold;
+            min-height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
-        .score {
+        
+        .score, .timer {
             font-size: 1.2rem;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 8px 15px;
+            border-radius: 50px;
+            display: inline-block;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        .timer {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
+        
+        /* تأثيرات الحركة */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        
+        /* تأثيرات النجاح والفشل */
+        .correct {
+            color: #28a745;
+            animation: bounce 0.5s ease;
+        }
+        
+        .wrong {
+            color: #dc3545;
+            animation: shake 0.5s ease;
+        }
+        
+        /* تأثيرات العوامات */
+        .floating-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .heart {
+            position: absolute;
+            opacity: 0;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.5; }
+            50% { transform: translateY(-100px) rotate(180deg); }
+            100% { transform: translateY(-200px) rotate(360deg); opacity: 0; }
+        }
+        
+        /* تأثير الصورة الكاملة */
+        .fullscreen-emoji {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .fullscreen-emoji span {
+            font-size: 10rem;
+            animation: pulse 2s infinite;
+        }
+        
+        /* تأثير الأمطار */
+        .falling-emoji {
+            position: fixed;
+            top: -100px;
+            z-index: 100;
+            font-size: 2rem;
+            animation-timing-function: linear;
+            animation-fill-mode: forwards;
+        }
+        
+        /* تأثير الوميض */
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: scale(0.8); }
+            20% { opacity: 1; transform: scale(1); }
+            80% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(1.2); }
+        }
+        
+        @keyframes fall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        
+        /* تصميم متجاوب */
+        @media (max-width: 768px) {
+            .emoji {
+                font-size: 4rem;
+            }
+            
+            .options button {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+            
+            .result {
+                font-size: 1.1rem;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- تأثير العوامات -->
+    <div class="floating-hearts" id="floatingHearts"></div>
 
     <!-- Header with Back Button -->
     <div class="header">
-        <a href="index.html" class="btn btn-light"><i class="fas fa-arrow-left"></i> رجوع</a>
+        <a href="index.html" class="back-btn animate__animated animate__fadeInLeft">
+            <i class="fas fa-arrow-right"></i> رجوع
+        </a>
     </div>
 
     <!-- Game content -->
     <div class="game-container">
         <div class="emoji-game">
-            <div class="score" id="score">الإجابات الصحيحة: 0</div>
-            <div class="timer" id="timer">الوقت المتبقي: 10 ثواني</div>
-            <div class="emoji" id="emoji">😊</div>
+            <div class="score animate__animated animate__fadeIn" id="score">الإجابات الصحيحة: 0</div>
+            <div class="timer animate__animated animate__fadeIn" id="timer">الوقت المتبقي: 10 ثواني</div>
+            <div class="emoji animate__animated animate__bounceIn" id="emoji">😊</div>
             <div class="options" id="options">
                 <!-- سيتم ملء الخيارات هنا ديناميكيًا -->
             </div>
-            <div class="result" id="result"></div>
+            <div class="result animate__animated" id="result"></div>
         </div>
     </div>
 
+    <!-- تأثير الصورة الكاملة -->
+    <div id="fullscreenEmoji" class="fullscreen-emoji"></div>
+
     <!-- Bottom navigation bar -->
     <nav class="bottom-nav d-flex justify-content-around">
-        <a href="index.html"><i class="fas fa-home"></i><br>الرئيسية</a>
-        <a href="draw.html"><i class="fas fa-paint-brush"></i><br>ارسم مشاعرك</a>
-        <a href="chat.html"><i class="fas fa-comments"></i><br>الدردشة</a>
-        <a href="games.html"><i class="fas fa-gamepad"></i><br>الألعاب</a>
+        <a href="index.html"><i class="fas fa-home nav-icon"></i><br>الرئيسية</a>
+        <a href="draw.html"><i class="fas fa-paint-brush nav-icon"></i><br>ارسم مشاعرك</a>
+        <a href="chat.html"><i class="fas fa-comments nav-icon"></i><br>الدردشة</a>
+        <a href="games.html"><i class="fas fa-gamepad nav-icon"></i><br>الألعاب</a>
     </nav>
 
     <script>
@@ -133,29 +345,96 @@
             { emoji: "😍", feeling: "عاشق" },
             { emoji: "🤔", feeling: "متفكر" },
             { emoji: "😱", feeling: "خائف" },
+            { emoji: "😎", feeling: "رائع" },
+            { emoji: "🤩", feeling: "مندهش" },
+            { emoji: "🥰", feeling: "محب" },
+            { emoji: "😇", feeling: "طيب" },
+            { emoji: "🤪", feeling: "مضحك" },
+            { emoji: "😤", feeling: "منفعل" },
+            { emoji: "🥺", feeling: "توسلي" }
         ];
 
         let currentEmoji;
         let score = 0;
         let timeLeft = 10;
         let timer;
+        let gameActive = true;
+
+        // إنشاء تأثير العوامات العشوائية
+        function createFloatingHearts() {
+            const container = document.getElementById('floatingHearts');
+            const hearts = ['❤️', '✨', '🌟', '🎉', '👍', '👏'];
+            
+            for (let i = 0; i < 10; i++) {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = Math.random() * 100 + 'vh';
+                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                heart.style.animationDelay = Math.random() * 5 + 's';
+                heart.style.opacity = Math.random() * 0.5 + 0.1;
+                container.appendChild(heart);
+            }
+        }
+
+        // عرض إيموجي كامل الشاشة
+        function showFullscreenEmoji(emoji) {
+            const fullscreen = document.getElementById('fullscreenEmoji');
+            fullscreen.innerHTML = `<span>${emoji}</span>`;
+            fullscreen.style.opacity = '1';
+            fullscreen.style.animation = 'fadeInOut 1.5s forwards';
+            
+            setTimeout(() => {
+                fullscreen.style.opacity = '0';
+            }, 1500);
+        }
+
+        // إنشاء تأثير أمطار الإيموجي
+        function createEmojiRain(emoji) {
+            const emojiCount = 20;
+            
+            for (let i = 0; i < emojiCount; i++) {
+                setTimeout(() => {
+                    const fallingEmoji = document.createElement('div');
+                    fallingEmoji.className = 'falling-emoji';
+                    fallingEmoji.textContent = emoji;
+                    fallingEmoji.style.left = `${Math.random() * 100}vw`;
+                    fallingEmoji.style.animation = `fall ${Math.random() * 2 + 1}s linear forwards, flash ${Math.random() * 0.3 + 0.1}s alternate infinite`;
+                    fallingEmoji.style.fontSize = `${Math.random() * 30 + 20}px`;
+                    document.body.appendChild(fallingEmoji);
+                    
+                    setTimeout(() => {
+                        fallingEmoji.remove();
+                    }, 3000);
+                }, i * 100);
+            }
+        }
 
         // اختيار إيموجي عشوائي
         function getRandomEmoji() {
+            if (!gameActive) return;
+            
             const randomIndex = Math.floor(Math.random() * emojis.length);
             currentEmoji = emojis[randomIndex];
-            document.getElementById("emoji").textContent = currentEmoji.emoji;
+            const emojiElement = document.getElementById("emoji");
+            
+            emojiElement.classList.add('animate__animated', 'animate__flipInY');
+            setTimeout(() => {
+                emojiElement.textContent = currentEmoji.emoji;
+                emojiElement.classList.remove('animate__flipInY');
+            }, 300);
+            
             document.getElementById("result").textContent = "";
-            updateOptions(); // تحديث الخيارات
+            updateOptions();
             resetTimer();
         }
 
         // إنشاء خيارات عشوائية
         function updateOptions() {
             const optionsContainer = document.getElementById("options");
-            optionsContainer.innerHTML = ""; // مسح الخيارات السابقة
+            optionsContainer.innerHTML = "";
 
-            // إنشاء قائمة خيارات تحتوي على الإجابة الصحيحة + 3 إجابات عشوائية أخرى
             const options = [currentEmoji.feeling];
             while (options.length < 4) {
                 const randomFeeling = emojis[Math.floor(Math.random() * emojis.length)].feeling;
@@ -164,13 +443,12 @@
                 }
             }
 
-            // خلط الخيارات عشوائيًا
             options.sort(() => Math.random() - 0.5);
 
-            // إضافة الخيارات إلى الواجهة
             options.forEach((option) => {
                 const button = document.createElement("button");
                 button.textContent = option;
+                button.classList.add('animate__animated', 'animate__fadeInUp');
                 button.onclick = () => checkAnswer(option);
                 optionsContainer.appendChild(button);
             });
@@ -178,17 +456,31 @@
 
         // التحقق من الإجابة
         function checkAnswer(answer) {
+            if (!gameActive) return;
+            gameActive = false;
+            
             const resultElement = document.getElementById("result");
+            const emojiElement = document.getElementById("emoji");
+            
             if (answer === currentEmoji.feeling) {
                 resultElement.textContent = "إجابة صحيحة! 🎉";
-                resultElement.style.color = "green";
+                resultElement.className = "result correct animate__animated animate__bounce";
                 score++;
+                showFullscreenEmoji(currentEmoji.emoji);
+                createEmojiRain(currentEmoji.emoji);
+                speakText("إجابة صحيحة! " + currentEmoji.feeling);
             } else {
                 resultElement.textContent = `إجابة خاطئة! الإجابة الصحيحة هي: ${currentEmoji.feeling} ❌`;
-                resultElement.style.color = "red";
+                resultElement.className = "result wrong animate__animated animate__shakeX";
+                speakText("إجابة خاطئة! الإجابة الصحيحة هي " + currentEmoji.feeling);
             }
+            
             document.getElementById("score").textContent = `الإجابات الصحيحة: ${score}`;
-            setTimeout(getRandomEmoji, 1500); // تغيير الإيموجي بعد 1.5 ثانية
+            
+            setTimeout(() => {
+                gameActive = true;
+                getRandomEmoji();
+            }, 2000);
         }
 
         // بدء المؤقت
@@ -196,11 +488,19 @@
             timer = setInterval(() => {
                 timeLeft--;
                 document.getElementById("timer").textContent = `الوقت المتبقي: ${timeLeft} ثواني`;
+                
                 if (timeLeft <= 0) {
                     clearInterval(timer);
-                    document.getElementById("result").textContent = "انتهى الوقت! ⏰";
-                    document.getElementById("result").style.color = "red";
-                    setTimeout(getRandomEmoji, 1500);
+                    const resultElement = document.getElementById("result");
+                    resultElement.textContent = "انتهى الوقت! ⏰";
+                    resultElement.className = "result wrong animate__animated animate__shakeX";
+                    speakText("انتهى الوقت!");
+                    
+                    setTimeout(() => {
+                        if (gameActive) {
+                            getRandomEmoji();
+                        }
+                    }, 1500);
                 }
             }, 1000);
         }
@@ -208,15 +508,20 @@
         // إعادة تعيين المؤقت
         function resetTimer() {
             clearInterval(timer);
-            timeLeft = 50;
+            timeLeft = 10;
             document.getElementById("timer").textContent = `الوقت المتبقي: ${timeLeft} ثواني`;
             startTimer();
         }
 
-        // بدء اللعبة
+        // تهيئة الصفحة عند التحميل
         window.onload = () => {
+            createFloatingHearts();
             getRandomEmoji();
-            startTimer();
+            
+            // إضافة تأثيرات للعناصر عند التحميل
+            document.querySelectorAll('.score, .timer, .emoji').forEach(el => {
+                el.classList.add('animate__animated', 'animate__fadeIn');
+            });
         };
     </script>
 </body>
