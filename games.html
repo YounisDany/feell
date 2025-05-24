@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لعبة الإيموجي</title>
+    <title>لعبة الإيموجي - عبر عن مشاعرك</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -26,7 +26,7 @@
             text-align: center;
             min-height: 100vh;
             overflow-x: hidden;
-            padding-bottom: 70px;
+            padding-bottom: 80px;
         }
         
         .header {
@@ -38,9 +38,12 @@
             padding: 15px;
             z-index: 1000;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        .back-btn {
+        .back-btn, .skip-btn {
             background-color: white;
             color: var(--primary-color);
             border: none;
@@ -49,9 +52,12 @@
             font-weight: bold;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
         
-        .back-btn:hover {
+        .back-btn:hover, .skip-btn:hover {
             transform: translateX(-5px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
@@ -68,26 +74,40 @@
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
             z-index: 1000;
             border-radius: 20px 20px 0 0;
+            display: flex;
+            justify-content: space-around;
         }
         
         .bottom-nav a {
             color: white;
             text-decoration: none;
-            padding: 10px 15px;
-            display: inline-block;
-            font-size: 13px;
+            padding: 5px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             transition: all 0.3s ease;
+            border-radius: 10px;
+            flex: 1;
+            max-width: 20%;
         }
         
         .bottom-nav a i {
-            display: block;
             font-size: 20px;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
             transition: all 0.3s ease;
         }
         
+        .bottom-nav a span {
+            font-size: 12px;
+        }
+        
         .bottom-nav a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
             transform: translateY(-5px);
+        }
+        
+        .bottom-nav a.active {
+            background-color: rgba(255, 255, 255, 0.3);
         }
         
         .bottom-nav a:hover i {
@@ -97,8 +117,8 @@
         
         .game-container {
             margin-top: 70px;
-            margin-bottom: 70px;
-            height: calc(100vh - 140px);
+            margin-bottom: 80px;
+            min-height: calc(100vh - 150px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -142,6 +162,8 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            flex: 1;
+            min-width: 120px;
         }
         
         .options button:hover {
@@ -161,16 +183,24 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            padding: 10px;
+            border-radius: 10px;
         }
         
-        .score, .timer {
-            font-size: 1.2rem;
-            margin-bottom: 15px;
+        .score-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 15px;
+        }
+        
+        .score, .timer, .question-count {
+            font-size: 1rem;
             background: rgba(255, 255, 255, 0.7);
             padding: 8px 15px;
             border-radius: 50px;
-            display: inline-block;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            flex: 1;
         }
         
         /* تأثيرات الحركة */
@@ -201,36 +231,14 @@
         /* تأثيرات النجاح والفشل */
         .correct {
             color: #28a745;
+            background-color: rgba(40, 167, 69, 0.1);
             animation: bounce 0.5s ease;
         }
         
         .wrong {
             color: #dc3545;
+            background-color: rgba(220, 53, 69, 0.1);
             animation: shake 0.5s ease;
-        }
-        
-        /* تأثيرات العوامات */
-        .floating-hearts {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-        }
-        
-        .heart {
-            position: absolute;
-            opacity: 0;
-            animation: float 6s ease-in-out infinite;
-        }
-        
-        @keyframes float {
-            0% { transform: translateY(0px) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.5; }
-            50% { transform: translateY(-100px) rotate(180deg); }
-            100% { transform: translateY(-200px) rotate(360deg); opacity: 0; }
         }
         
         /* تأثير الصورة الكاملة */
@@ -264,24 +272,6 @@
             animation-fill-mode: forwards;
         }
         
-        /* تأثير الوميض */
-        @keyframes flash {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-        
-        @keyframes fadeInOut {
-            0% { opacity: 0; transform: scale(0.8); }
-            20% { opacity: 1; transform: scale(1); }
-            80% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(1.2); }
-        }
-        
-        @keyframes fall {
-            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-        }
-        
         /* تصميم متجاوب */
         @media (max-width: 768px) {
             .emoji {
@@ -289,36 +279,56 @@
             }
             
             .options button {
-                padding: 10px 20px;
+                padding: 10px 15px;
                 font-size: 1rem;
+                min-width: 100px;
             }
             
             .result {
                 font-size: 1.1rem;
             }
+            
+            .score, .timer, .question-count {
+                font-size: 0.9rem;
+                padding: 6px 10px;
+            }
+            
+            .bottom-nav a span {
+                font-size: 10px;
+            }
+            
+            .bottom-nav a i {
+                font-size: 18px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- تأثير العوامات -->
-    <div class="floating-hearts" id="floatingHearts"></div>
-
-    <!-- Header with Back Button -->
+    <!-- Header مع زر الرجوع وزر التخطي -->
     <div class="header">
         <a href="index.html" class="back-btn animate__animated animate__fadeInLeft">
             <i class="fas fa-arrow-right"></i> رجوع
         </a>
+        <button class="skip-btn animate__animated animate__fadeInRight" id="skipBtn">
+            <i class="fas fa-forward"></i> تخطي
+        </button>
     </div>
 
-    <!-- Game content -->
+    <!-- محتوى اللعبة -->
     <div class="game-container">
         <div class="emoji-game">
-            <div class="score animate__animated animate__fadeIn" id="score">الإجابات الصحيحة: 0</div>
-            <div class="timer animate__animated animate__fadeIn" id="timer">الوقت المتبقي: 10 ثواني</div>
+            <div class="score-container">
+                <div class="score animate__animated animate__fadeIn" id="score">النقاط: 0</div>
+                <div class="question-count animate__animated animate__fadeIn" id="questionCount">السؤال: 1/10</div>
+                <div class="timer animate__animated animate__fadeIn" id="timer">⏱️ 10 ث</div>
+            </div>
+            
             <div class="emoji animate__animated animate__bounceIn" id="emoji">😊</div>
+            
             <div class="options" id="options">
                 <!-- سيتم ملء الخيارات هنا ديناميكيًا -->
             </div>
+            
             <div class="result animate__animated" id="result"></div>
         </div>
     </div>
@@ -326,12 +336,28 @@
     <!-- تأثير الصورة الكاملة -->
     <div id="fullscreenEmoji" class="fullscreen-emoji"></div>
 
-    <!-- Bottom navigation bar -->
-    <nav class="bottom-nav d-flex justify-content-around">
-        <a href="index.html"><i class="fas fa-home nav-icon"></i><br>الرئيسية</a>
-        <a href="draw.html"><i class="fas fa-paint-brush nav-icon"></i><br>ارسم مشاعرك</a>
-        <a href="chat.html"><i class="fas fa-comments nav-icon"></i><br>الدردشة</a>
-        <a href="games.html"><i class="fas fa-gamepad nav-icon"></i><br>الألعاب</a>
+    <!-- Bottom navigation bar مطابق للصفحة الرئيسية -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="animate__animated animate__fadeIn">
+            <i class="fas fa-home"></i>
+            <span>الرئيسية</span>
+        </a>
+        <a href="draw.html" class="animate__animated animate__fadeIn">
+            <i class="fas fa-paint-brush"></i>
+            <span>ارسم مشاعرك</span>
+        </a>
+        <a href="chat.html" class="animate__animated animate__fadeIn">
+            <i class="fas fa-comments"></i>
+            <span>الدردشة</span>
+        </a>
+        <a href="games.html" class="active animate__animated animate__fadeIn">
+            <i class="fas fa-gamepad"></i>
+            <span>الألعاب</span>
+        </a>
+        <a href="feel.html" class="animate__animated animate__fadeIn">
+            <i class="fas fa-smile"></i>
+            <span>شعورك</span>
+        </a>
     </nav>
 
     <script>
@@ -351,7 +377,12 @@
             { emoji: "😇", feeling: "طيب" },
             { emoji: "🤪", feeling: "مضحك" },
             { emoji: "😤", feeling: "منفعل" },
-            { emoji: "🥺", feeling: "توسلي" }
+            { emoji: "🥺", feeling: "توسلي" },
+            { emoji: "😨", feeling: "قلق" },
+            { emoji: "😵", feeling: "دوار" },
+            { emoji: "🤒", feeling: "مريض" },
+            { emoji: "🤢", feeling: "غثيان" },
+            { emoji: "😈", feeling: "مشاغب" }
         ];
 
         let currentEmoji;
@@ -359,24 +390,9 @@
         let timeLeft = 10;
         let timer;
         let gameActive = true;
-
-        // إنشاء تأثير العوامات العشوائية
-        function createFloatingHearts() {
-            const container = document.getElementById('floatingHearts');
-            const hearts = ['❤️', '✨', '🌟', '🎉', '👍', '👏'];
-            
-            for (let i = 0; i < 10; i++) {
-                const heart = document.createElement('div');
-                heart.classList.add('heart');
-                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-                heart.style.left = Math.random() * 100 + 'vw';
-                heart.style.top = Math.random() * 100 + 'vh';
-                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
-                heart.style.animationDelay = Math.random() * 5 + 's';
-                heart.style.opacity = Math.random() * 0.5 + 0.1;
-                container.appendChild(heart);
-            }
-        }
+        let currentQuestion = 1;
+        const totalQuestions = 10;
+        let usedEmojis = [];
 
         // عرض إيموجي كامل الشاشة
         function showFullscreenEmoji(emoji) {
@@ -390,33 +406,26 @@
             }, 1500);
         }
 
-        // إنشاء تأثير أمطار الإيموجي
-        function createEmojiRain(emoji) {
-            const emojiCount = 20;
-            
-            for (let i = 0; i < emojiCount; i++) {
-                setTimeout(() => {
-                    const fallingEmoji = document.createElement('div');
-                    fallingEmoji.className = 'falling-emoji';
-                    fallingEmoji.textContent = emoji;
-                    fallingEmoji.style.left = `${Math.random() * 100}vw`;
-                    fallingEmoji.style.animation = `fall ${Math.random() * 2 + 1}s linear forwards, flash ${Math.random() * 0.3 + 0.1}s alternate infinite`;
-                    fallingEmoji.style.fontSize = `${Math.random() * 30 + 20}px`;
-                    document.body.appendChild(fallingEmoji);
-                    
-                    setTimeout(() => {
-                        fallingEmoji.remove();
-                    }, 3000);
-                }, i * 100);
-            }
-        }
-
-        // اختيار إيموجي عشوائي
+        // اختيار إيموجي عشوائي (بدون تكرار حتى تنتهي جميع الإيموجيات)
         function getRandomEmoji() {
             if (!gameActive) return;
             
-            const randomIndex = Math.floor(Math.random() * emojis.length);
-            currentEmoji = emojis[randomIndex];
+            // إذا استخدمنا جميع الإيموجيات، نعيد القائمة من جديد
+            if (usedEmojis.length === emojis.length) {
+                usedEmojis = [];
+            }
+            
+            // اختيار إيموجي لم يستخدم بعد
+            let availableEmojis = emojis.filter(emoji => !usedEmojis.includes(emoji.emoji));
+            if (availableEmojis.length === 0) {
+                availableEmojis = [...emojis];
+                usedEmojis = [];
+            }
+            
+            const randomIndex = Math.floor(Math.random() * availableEmojis.length);
+            currentEmoji = availableEmojis[randomIndex];
+            usedEmojis.push(currentEmoji.emoji);
+            
             const emojiElement = document.getElementById("emoji");
             
             emojiElement.classList.add('animate__animated', 'animate__flipInY');
@@ -426,6 +435,7 @@
             }, 300);
             
             document.getElementById("result").textContent = "";
+            document.getElementById("questionCount").textContent = `السؤال: ${currentQuestion}/${totalQuestions}`;
             updateOptions();
             resetTimer();
         }
@@ -445,10 +455,11 @@
 
             options.sort(() => Math.random() - 0.5);
 
-            options.forEach((option) => {
+            options.forEach((option, index) => {
                 const button = document.createElement("button");
                 button.textContent = option;
                 button.classList.add('animate__animated', 'animate__fadeInUp');
+                button.style.animationDelay = `${index * 0.1}s`;
                 button.onclick = () => checkAnswer(option);
                 optionsContainer.appendChild(button);
             });
@@ -458,6 +469,7 @@
         function checkAnswer(answer) {
             if (!gameActive) return;
             gameActive = false;
+            clearInterval(timer);
             
             const resultElement = document.getElementById("result");
             const emojiElement = document.getElementById("emoji");
@@ -466,6 +478,7 @@
                 resultElement.textContent = "إجابة صحيحة! 🎉";
                 resultElement.className = "result correct animate__animated animate__bounce";
                 score++;
+                document.getElementById("score").textContent = `النقاط: ${score}`;
                 showFullscreenEmoji(currentEmoji.emoji);
                 createEmojiRain(currentEmoji.emoji);
                 speakText("إجابة صحيحة! " + currentEmoji.feeling);
@@ -475,19 +488,44 @@
                 speakText("إجابة خاطئة! الإجابة الصحيحة هي " + currentEmoji.feeling);
             }
             
-            document.getElementById("score").textContent = `الإجابات الصحيحة: ${score}`;
+            currentQuestion++;
             
-            setTimeout(() => {
-                gameActive = true;
-                getRandomEmoji();
-            }, 2000);
+            if (currentQuestion > totalQuestions) {
+                setTimeout(endGame, 2000);
+            } else {
+                setTimeout(() => {
+                    gameActive = true;
+                    getRandomEmoji();
+                }, 2000);
+            }
+        }
+
+        // إنشاء تأثير أمطار الإيموجي
+        function createEmojiRain(emoji) {
+            const emojiCount = 20;
+            
+            for (let i = 0; i < emojiCount; i++) {
+                setTimeout(() => {
+                    const fallingEmoji = document.createElement('div');
+                    fallingEmoji.className = 'falling-emoji';
+                    fallingEmoji.textContent = emoji;
+                    fallingEmoji.style.left = `${Math.random() * 100}vw`;
+                    fallingEmoji.style.animation = `fall ${Math.random() * 2 + 1}s linear forwards`;
+                    fallingEmoji.style.fontSize = `${Math.random() * 30 + 20}px`;
+                    document.body.appendChild(fallingEmoji);
+                    
+                    setTimeout(() => {
+                        fallingEmoji.remove();
+                    }, 3000);
+                }, i * 100);
+            }
         }
 
         // بدء المؤقت
         function startTimer() {
             timer = setInterval(() => {
                 timeLeft--;
-                document.getElementById("timer").textContent = `الوقت المتبقي: ${timeLeft} ثواني`;
+                document.getElementById("timer").textContent = `⏱️ ${timeLeft} ث`;
                 
                 if (timeLeft <= 0) {
                     clearInterval(timer);
@@ -496,11 +534,17 @@
                     resultElement.className = "result wrong animate__animated animate__shakeX";
                     speakText("انتهى الوقت!");
                     
-                    setTimeout(() => {
-                        if (gameActive) {
-                            getRandomEmoji();
-                        }
-                    }, 1500);
+                    currentQuestion++;
+                    
+                    if (currentQuestion > totalQuestions) {
+                        setTimeout(endGame, 1500);
+                    } else {
+                        setTimeout(() => {
+                            if (gameActive) {
+                                getRandomEmoji();
+                            }
+                        }, 1500);
+                    }
                 }
             }, 1000);
         }
@@ -509,19 +553,107 @@
         function resetTimer() {
             clearInterval(timer);
             timeLeft = 10;
-            document.getElementById("timer").textContent = `الوقت المتبقي: ${timeLeft} ثواني`;
+            document.getElementById("timer").textContent = `⏱️ ${timeLeft} ث`;
             startTimer();
         }
 
+        // إنهاء اللعبة
+        function endGame() {
+            gameActive = false;
+            clearInterval(timer);
+            
+            const emojiGame = document.querySelector('.emoji-game');
+            emojiGame.innerHTML = `
+                <h2 class="animate__animated animate__fadeIn">انتهت اللعبة!</h2>
+                <div class="final-score animate__animated animate__bounceIn" style="font-size: 2rem; margin: 20px 0;">
+                    النقاط النهائية: ${score}/${totalQuestions}
+                </div>
+                <div class="animate__animated animate__fadeIn" style="margin-bottom: 20px;">
+                    ${getResultMessage(score)}
+                </div>
+                <button id="restartBtn" class="btn btn-primary animate__animated animate__fadeInUp" style="padding: 12px 30px; font-size: 1.2rem; border-radius: 50px;">
+                    <i class="fas fa-redo"></i> لعب مرة أخرى
+                </button>
+            `;
+            
+            document.getElementById('restartBtn').addEventListener('click', restartGame);
+            
+            // عرض تأثير النجاح إذا كانت النتيجة جيدة
+            if (score >= totalQuestions * 0.7) {
+                createEmojiRain("🎉");
+                createEmojiRain("🏆");
+                showFullscreenEmoji("🥳");
+                speakText(`مبروك! حصلت على ${score} من ${totalQuestions}`);
+            } else {
+                showFullscreenEmoji("👍");
+                speakText(`حصلت على ${score} من ${totalQuestions}. حاول مرة أخرى!`);
+            }
+        }
+
+        // رسالة النتيجة النهائية
+        function getResultMessage(score) {
+            const percentage = score / totalQuestions;
+            
+            if (percentage >= 0.9) return "ممتاز! أنت خبير في فهم المشاعر 🏆";
+            if (percentage >= 0.7) return "جيد جداً! لديك مهارة في فهم المشاعر 😊";
+            if (percentage >= 0.5) return "ليس سيئاً! يمكنك تحسين نتائجك 💪";
+            return "حاول مرة أخرى! ستصبح أفضل مع الممارسة 👍";
+        }
+
+        // إعادة تشغيل اللعبة
+        function restartGame() {
+            score = 0;
+            currentQuestion = 1;
+            usedEmojis = [];
+            gameActive = true;
+            
+            const emojiGame = document.querySelector('.emoji-game');
+            emojiGame.innerHTML = `
+                <div class="score-container">
+                    <div class="score animate__animated animate__fadeIn" id="score">النقاط: 0</div>
+                    <div class="question-count animate__animated animate__fadeIn" id="questionCount">السؤال: 1/10</div>
+                    <div class="timer animate__animated animate__fadeIn" id="timer">⏱️ 10 ث</div>
+                </div>
+                
+                <div class="emoji animate__animated animate__bounceIn" id="emoji">😊</div>
+                
+                <div class="options" id="options"></div>
+                
+                <div class="result animate__animated" id="result"></div>
+            `;
+            
+            getRandomEmoji();
+        }
+
+        // تخطي السؤال الحالي
+        document.getElementById('skipBtn').addEventListener('click', () => {
+            if (!gameActive) return;
+            
+            clearInterval(timer);
+            gameActive = false;
+            
+            const resultElement = document.getElementById("result");
+            resultElement.textContent = "تم تخطي السؤال ⏭️";
+            resultElement.className = "result animate__animated animate__fadeIn";
+            
+            currentQuestion++;
+            
+            if (currentQuestion > totalQuestions) {
+                setTimeout(endGame, 1500);
+            } else {
+                setTimeout(() => {
+                    gameActive = true;
+                    getRandomEmoji();
+                }, 1500);
+            }
+        });
+
         // تهيئة الصفحة عند التحميل
         window.onload = () => {
-            createFloatingHearts();
             getRandomEmoji();
             
-            // إضافة تأثيرات للعناصر عند التحميل
-            document.querySelectorAll('.score, .timer, .emoji').forEach(el => {
-                el.classList.add('animate__animated', 'animate__fadeIn');
-            });
+            // تمييز الصفحة الحالية في القائمة السفلية
+            document.querySelector(`.bottom-nav a[href="games.html"]`).classList.add('active');
         };
     </script>
 </body>
