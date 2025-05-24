@@ -1,201 +1,245 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
-    <meta name="google-site-verification" content="KYmenk9IZSxCptP6FRdVcl38IqvCr8_ElnT9j6hMimA" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> تطبيق عبر عن مشاعرك - رحله من الاحساس </title>
-<link rel="manifest" href="manifest.json">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<link rel="apple-touch-icon" href="images.png">
-
+    <title>تطبيق عبر عن مشاعرك - رحلة من الإحساس</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=iQqyDrUh"></script>
-
     <style>
+        :root {
+            --primary-color: #6a5acd;
+            --secondary-color: #9370db;
+            --accent-color: #ff69b4;
+        }
+        
         body {
             padding-bottom: 70px;
             font-family: 'Tajawal', sans-serif;
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             text-align: center;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
+        
+        .header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        
         .bottom-nav {
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            background: #4e6dde;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
             text-align: center;
             padding: 10px 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            border-radius: 20px 20px 0 0;
         }
+        
         .bottom-nav a {
             color: white;
             text-decoration: none;
             padding: 10px 15px;
             display: inline-block;
             font-size: 13px;
+            transition: all 0.3s ease;
         }
+        
+        .bottom-nav a i {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
         .emoji-img {
             width: 80px;
-            margin: 10px;
+            margin: 15px;
             cursor: pointer;
-            transition: transform 0.3s ease-in-out;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
         }
+        
         .emoji-img:hover {
-            transform: scale(1.2);
+            transform: scale(1.1);
         }
-        .emoji-popup {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            display: none;
-            animation: fadeOut 6.5s forwards;
-            background-color: #ffffff68;
-        }
+        
         .emoji-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             max-width: 900px;
             margin: auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
         }
-        @keyframes fadeOut {
-            0% { opacity: 1; }
-            100% { opacity: 0; }
+        
+        /* تأثير الصورة الكاملة */
+        .fullscreen-emoji {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
         }
+        
+        .fullscreen-emoji img {
+            max-width: 80%;
+            max-height: 80%;
+            animation: pulse 2s infinite;
+        }
+        
+        /* تأثير الأمطار */
+        .falling-emoji {
+            position: fixed;
+            top: -100px;
+            z-index: 100;
+            animation-timing-function: linear;
+            animation-fill-mode: forwards;
+        }
+        
+        /* تأثير الوميض */
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: scale(0.8); }
+            20% { opacity: 1; transform: scale(1); }
+            80% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(1.2); }
+        }
+        
         @keyframes fall {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(100vh); opacity: 0; }
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
         }
-  
-    </style>
-<script>
-
-     // هذا الحدث يتم تشغيله عندما يكون الموقع قابلاً للتثبيت
-        let deferredPrompt;
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            // منع المتصفح من العرض التلقائي للتثبيت
-            e.preventDefault();
-            // حفظ الحدث ليتم استخدامه لاحقًا
-            deferredPrompt = e;
-
-            // عرض نافذة تأكيد للمستخدم
-            const userConsent = confirm("هل تريد تثبيت الموقع على الصفحة الرئيسية؟");
-
-            if (userConsent) {
-                // عرض prompt التثبيت
-                deferredPrompt.prompt();
-                // انتظار اختيار المستخدم
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('وافق المستخدم على تثبيت الموقع');
-                    } else {
-                        console.log('رفض المستخدم تثبيت الموقع');
-                    }
-                    deferredPrompt = null;
-                });
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @media (max-width: 768px) {
+            .emoji-img {
+                width: 60px;
+                margin: 10px;
             }
-        });
-
-</script>
-
+        }
+    </style>
 </head>
 <body>
-    <div class="container mt-5">
-        <h1> تطبيق عبر عن مشاعرك - رحله من الاحساس </h1>
-        <h1 class="animate__animated animate__fadeInDown">مرحبًا بك في تطبيق "عبر عن مشاعرك"</h1>
-        <p class="animate__animated animate__fadeInUp">اختر التعبير عن مشاعرك عبر الصور التالية:</p>
-
-
-        <div class="emoji-container">
-     
-            <img src="img/2.svg" class="emoji-img" onclick="showEmoji('img/2.svg', ' ')">
-            
-         
-            <img src="img/5.svg" class="emoji-img" onclick="showEmoji('img/5.svg', '')">
-            <img src="img/happysa.svg" class="emoji-img" onclick="showEmoji('img/happysa.svg', '')">
-
-            <img src="img/6.svg" class="emoji-img" onclick="showEmoji('img/6.svg', '')">
-            <img src="img/9.svg" class="emoji-img" onclick="showEmoji('img/9.svg', '')">
-            <img src="img/11.svg" class="emoji-img" onclick="showEmoji('img/11.svg', '  ')">
-      
-            <img src="img/14.svg" class="emoji-img" onclick="showEmoji('img/14.svg', '')">
-            <img src="img/15.svg" class="emoji-img" onclick="showEmoji('img/15.svg', '')">
-            <img src="img/16.svg" class="emoji-img" onclick="showEmoji('img/16.svg', '  ')">
-            <img src="img/17.svg" class="emoji-img" onclick="showEmoji('img/17.svg', '  ')">
-        
-            <img src="img/19.svg" class="emoji-img" onclick="showEmoji('img/19.svg', '')">
-         
-            <img src="img/22.svg" class="emoji-img" onclick="showEmoji('img/22.svg', '')">
-      
-            <img src="img/24.svg" class="emoji-img" onclick="showEmoji('img/24.svg', '  ')">
-           
-            <img src="img/26.svg" class="emoji-img" onclick="showEmoji('img/26.svg', '  ')">
-            
-          
-            <img src="img/31.svg" class="emoji-img" onclick="showEmoji('img/31.svg', '')">
-        
-            <img src="img/33.svg" class="emoji-img" onclick="showEmoji('img/33.svg', '')">
-            <img src="img/34.svg" class="emoji-img" onclick="showEmoji('img/34.svg', '')">
-            <img src="img/8.svg" class="emoji-img" onclick="showEmoji('img/34.svg', '  34')">
-            <img src="img/8.svg" class="emoji-img" onclick="showEmoji('img/34.svg', 'الصورة رقم 34')">
-       <img src="img/8.svg" class="emoji-img" onclick="showEmoji('img/34.svg', 'الصورة رقم 34')">
-            <img src="img/8.svg" class="emoji-img" onclick="showEmoji('img/34.svg', 'الصورة رقم 34')">
-       <img src="img/8.svg" class="emoji-img" onclick="showEmoji('img/34.svg', 'الصورة رقم 34')">
-            <img src="img/8.svg" class="emoji-img" onclick="showEmoji('img/34.svg', 'الصورة رقم 34')">
-            
-        </div>
-        
+    <div class="header">
+        <h1 class="animate__animated animate__fadeInDown">تطبيق عبر عن مشاعرك</h1>
+        <p class="animate__animated animate__fadeInUp">اختر التعبير الذي يعكس مشاعرك الحالية</p>
     </div>
 
-    <div id="emojiPopup" class="emoji-popup"></div>
+    <div class="container mt-3">
+        <div class="emoji-container animate__animated animate__fadeIn">
+            <img src="img/2.svg" class="emoji-img" onclick="showEmoji('img/2.svg', 'سعيد جداً')">
+            <img src="img/5.svg" class="emoji-img" onclick="showEmoji('img/5.svg', 'متفاجئ')">
+            <img src="img/happysa.svg" class="emoji-img" onclick="showEmoji('img/happysa.svg', 'مبسوط')">
+            <img src="img/6.svg" class="emoji-img" onclick="showEmoji('img/6.svg', 'محتار')">
+            <img src="img/9.svg" class="emoji-img" onclick="showEmoji('img/9.svg', 'محبط')">
+            <img src="img/11.svg" class="emoji-img" onclick="showEmoji('img/11.svg', 'غاضب')">
+            <img src="img/14.svg" class="emoji-img" onclick="showEmoji('img/14.svg', 'مرهق')">
+            <img src="img/15.svg" class="emoji-img" onclick="showEmoji('img/15.svg', 'خائف')">
+            <img src="img/16.svg" class="emoji-img" onclick="showEmoji('img/16.svg', 'متفائل')">
+            <img src="img/17.svg" class="emoji-img" onclick="showEmoji('img/17.svg', 'محب')">
+            <img src="img/19.svg" class="emoji-img" onclick="showEmoji('img/19.svg', 'منزعج')">
+            <img src="img/22.svg" class="emoji-img" onclick="showEmoji('img/22.svg', 'متعب')">
+            <img src="img/24.svg" class="emoji-img" onclick="showEmoji('img/24.svg', 'مندهش')">
+            <img src="img/26.svg" class="emoji-img" onclick="showEmoji('img/26.svg', 'خجول')">
+            <img src="img/31.svg" class="emoji-img" onclick="showEmoji('img/31.svg', 'مرح')">
+            <img src="img/33.svg" class="emoji-img" onclick="showEmoji('img/33.svg', 'هادئ')">
+            <img src="img/34.svg" class="emoji-img" onclick="showEmoji('img/34.svg', 'محب للخير')">
+        </div>
+    </div>
+
+    <div id="fullscreenEmoji" class="fullscreen-emoji"></div>
 
     <nav class="bottom-nav d-flex justify-content-around">
         <a href="index.html"><i class="fas fa-home"></i><br>الرئيسية</a>
         <a href="draw.html"><i class="fas fa-paint-brush"></i><br>ارسم مشاعرك</a>
         <a href="chat.html"><i class="fas fa-comments"></i><br>الدردشة</a>
         <a href="games.html"><i class="fas fa-gamepad"></i><br>الألعاب</a>
-            <a href="feel.html"><i class="fas fa-smile"></i><br>شعورك</a>
-
+        <a href="feel.html"><i class="fas fa-smile"></i><br>شعورك</a>
     </nav>
 
     <script>
         function speakText(text) {
-            responsiveVoice.speak(text, "Arabic Male");
-        }
-
-        function showEmoji(imagePath, text) {
-            let emojiPopup = document.getElementById('emojiPopup');
-            emojiPopup.innerHTML = `<img src="${imagePath}" width="600px">`;
-            emojiPopup.style.display = 'block';
-            setTimeout(() => { emojiPopup.style.display = 'none'; }, 5500);
-
-            speakText(text);
-
-            for (let i = 0; i < 20; i++) { 
-                let fallingEmoji = document.createElement('img');
-                fallingEmoji.src = imagePath;
-                fallingEmoji.style.position = 'fixed';
-                fallingEmoji.style.left = Math.random() * window.innerWidth + 'px';
-                fallingEmoji.style.top = '-50px';
-                fallingEmoji.style.width = '50px';
-                fallingEmoji.style.animation = 'fall 2s linear';
-                document.body.appendChild(fallingEmoji);
-                setTimeout(() => fallingEmoji.remove(), 5000);
+            if (text.trim() !== '') {
+                responsiveVoice.speak(text, "Arabic Male", {
+                    pitch: 0.9,
+                    rate: 0.9,
+                    volume: 1
+                });
             }
         }
-
-    
-
-</script>
-
- 
+        
+        function showEmoji(imagePath, text) {
+            // عرض الصورة بحجم الشاشة مع تأثير التدرج
+            const fullscreen = document.getElementById('fullscreenEmoji');
+            fullscreen.innerHTML = `<img src="${imagePath}" alt="إيموجي">`;
+            fullscreen.style.opacity = '1';
+            fullscreen.style.animation = 'fadeInOut 3s forwards';
+            
+            // إخفاء الصورة الكاملة بعد 3 ثواني
+            setTimeout(() => {
+                fullscreen.style.opacity = '0';
+            }, 3000);
+            
+            // نطق النص
+            speakText(text);
+            
+            // إنشاء تأثير الأمطار
+            createEmojiRain(imagePath);
+        }
+        
+        function createEmojiRain(imagePath) {
+            const emojiCount = 30; // عدد الإيموجيات التي ستنزل
+            
+            for (let i = 0; i < emojiCount; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('img');
+                    emoji.src = imagePath;
+                    emoji.className = 'falling-emoji';
+                    emoji.style.width = `${Math.random() * 60 + 30}px`;
+                    emoji.style.left = `${Math.random() * 100}vw`;
+                    emoji.style.animation = `fall ${Math.random() * 2 + 2}s linear, flash ${Math.random() * 0.5 + 0.2}s alternate infinite`;
+                    
+                    document.body.appendChild(emoji);
+                    
+                    // إزالة الإيموجي بعد انتهاء الحركة
+                    setTimeout(() => {
+                        emoji.remove();
+                    }, 3000);
+                }, i * 100); // تأخير بين كل إيموجي وآخر
+            }
+        }
+    </script>
 </body>
 </html>
