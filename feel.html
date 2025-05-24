@@ -1,221 +1,427 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تتبع الشعور اليومي</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     <style>
+        :root {
+            --primary-color: #4a6bdf;
+            --secondary-color: #6c8eff;
+            --accent-color: #ff6f61;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+        }
+        
         body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #f0f8ff;
-            padding: 0;
-            margin: 0;
+            font-family: 'Tajawal', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--dark-text);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .month-header {
+            display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 10px 20px;
+            background-color: white;
+            border-bottom: 1px solid #eee;
         }
-        .swiper {
-            width: 90vw;
-            height: 50vh;
-            margin-top: 5vh;
+        
+        .month-title {
+            font-weight: bold;
+            font-size: 1.2rem;
         }
+        
+        .swiper-container {
+            width: 100%;
+            height: 200px;
+            margin: 20px 0;
+        }
+        
         .swiper-slide {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            opacity: 0.4;
+            transition: all 0.3s ease;
+        }
+        
+        .swiper-slide-active {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+        
+        .mood-label {
+            font-size: 1rem;
+            margin-top: 10px;
+            color: var(--dark-text);
+        }
+        
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 10px;
+            margin: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .day-header {
+            font-weight: bold;
+            text-align: center;
+            padding: 5px;
+            color: var(--primary-color);
+        }
+        
+        .calendar-day {
+            aspect-ratio: 1/1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        
+        .calendar-day:hover:not(.disabled) {
+            background-color: #f0f4ff;
+        }
+        
+        .calendar-day.disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .calendar-day.selected {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .calendar-day.saved::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            width: 20px;
+            height: 3px;
+            background-color: var(--accent-color);
+            border-radius: 3px;
+        }
+        
+        .controls {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .back-button {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 150px;
-            opacity: 0.4;
-            transition: opacity 0.3s ease-in-out;
-        }
-        .swiper-slide-active {
-            opacity: 1;
-        }
-        .controls {
-            width: 90%;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 5vh;
-        }
-        .calendar {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            grid-gap: 5px;
-            margin: 20px 0;
-        }
-        .calendar div {
-            padding: 8px;
-            text-align: center;
-            border-radius: 5px;
-            background-color: #eaeaea;
-            cursor: pointer;
-        }
-        .selected {
-            background-color: #4caf50;
             color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
         }
-        .disabled {
-            background-color: #d3d3d3;
-            cursor: not-allowed;
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%) scale(1.1);
         }
-        .saved {
-            background-color: #ffeb3b;
+        
+        .reason-select {
+            border: 2px solid #eee;
+            border-radius: 8px;
+            padding: 10px;
+            width: 100%;
+            margin: 15px 0;
         }
-        .emoji {
-            font-size: 20px;
-            margin-left: 10px;
+        
+        .save-btn {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            color: white;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s ease;
         }
-      .back-button {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    background: #007bff;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 50%;
-    font-size: 20px;
-    text-align: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    transition: background 0.3s, transform 0.2s;
-}
-
-.back-button:hover {
-    background: #0056b3;
-    text-decoration: none;
-    transform: scale(1.1);
-}
+        
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
- <a href="javascript:history.back()" class="back-button">
-    <i class="fas fa-arrow-right"></i>
-</a>
+    <div class="header">
+        <h2>تتبع الشعور اليومي</h2>
+        <a href="index.html" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+    </div>
     
-    <div class="swiper">
+    <div class="month-header">
+        <button class="btn btn-sm" onclick="changeMonth(-1)">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        <div class="month-title" id="monthTitle"></div>
+        <button class="btn btn-sm" onclick="changeMonth(1)">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+    </div>
+    
+    <div class="swiper-container">
         <div class="swiper-wrapper">
-            <div class="swiper-slide">😀</div>
-            <div class="swiper-slide">😊</div>
-            <div class="swiper-slide">😌</div>
-            <div class="swiper-slide">😢</div>
-            <div class="swiper-slide">😡</div>
+            <div class="swiper-slide">
+                <span>😀</span>
+                <span class="mood-label">سعيد جداً</span>
+            </div>
+            <div class="swiper-slide">
+                <span>😊</span>
+                <span class="mood-label">سعيد</span>
+            </div>
+            <div class="swiper-slide">
+                <span>😐</span>
+                <span class="mood-label">عادي</span>
+            </div>
+            <div class="swiper-slide">
+                <span>😌</span>
+                <span class="mood-label">هادئ</span>
+            </div>
+            <div class="swiper-slide">
+                <span>😢</span>
+                <span class="mood-label">حزين</span>
+            </div>
+            <div class="swiper-slide">
+                <span>😡</span>
+                <span class="mood-label">غاضب</span>
+            </div>
         </div>
-        <div class="swiper-pagination"></div>
+    </div>
+    
+    <div class="calendar" id="calendar">
+        <div class="day-header">الأحد</div>
+        <div class="day-header">الاثنين</div>
+        <div class="day-header">الثلاثاء</div>
+        <div class="day-header">الأربعاء</div>
+        <div class="day-header">الخميس</div>
+        <div class="day-header">الجمعة</div>
+        <div class="day-header">السبت</div>
     </div>
     
     <div class="controls">
-        <h2 class="text-primary">ما السبب؟</h2>
-        <select class="form-select" id="reason">
+        <h4 class="text-center mb-3">ما هو سبب شعورك اليوم؟</h4>
+        <select class="reason-select" id="reason">
             <option value="العمل">العمل</option>
             <option value="الدراسة">الدراسة</option>
-            <option value="الراحة">الراحة</option>
+            <option value="الصحة">الصحة</option>
+            <option value="العلاقات">العلاقات</option>
             <option value="العائلة">العائلة</option>
             <option value="الأصدقاء">الأصدقاء</option>
-            <option value="أخرى">أخرى</option>
+            <option value="الطقس">الطقس</option>
+            <option value="أخرى">أسباب أخرى</option>
         </select>
-        
-        <button class="btn btn-primary mt-3 w-100" onclick="saveMood()">حفظ</button>
+        <button class="save-btn" onclick="saveMood()">
+            <i class="fas fa-save"></i> حفظ الشعور
+        </button>
     </div>
-       <div class="calendar" id="calendar"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        const emojis = ["😀", "😊", "😌", "😢", "😡"];
-        let selectedMood = emojis[0];
+        // البيانات الأساسية
+        const moods = [
+            { emoji: "😀", label: "سعيد جداً" },
+            { emoji: "😊", label: "سعيد" },
+            { emoji: "😐", label: "عادي" },
+            { emoji: "😌", label: "هادئ" },
+            { emoji: "😢", label: "حزين" },
+            { emoji: "😡", label: "غاضب" }
+        ];
+        
+        let currentDate = new Date();
         let selectedDate = null;
-
-        // Initialize the calendar
-        function generateCalendar() {
-            let today = new Date();
-            let daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-            let calendarDiv = document.getElementById("calendar");
-            calendarDiv.innerHTML = "";
-
-            for (let i = 1; i <= daysInMonth; i++) {
-                let dayDiv = document.createElement("div");
-                let currentDay = new Date(today.getFullYear(), today.getMonth(), i);
-
-                // Check if the day is in the past or future
-                if (currentDay > today) {
-                    dayDiv.classList.add("disabled"); // Disable future days
-                }
-
-                // Add emoji if the mood is saved for this day
-                let savedMood = getSavedMood(i);
-                dayDiv.textContent = i;
-                if (savedMood) {
-                    dayDiv.classList.add("saved");
-                    dayDiv.innerHTML = `${i}<span class="emoji">${savedMood}</span>`;
-                }
-
-                dayDiv.onclick = function() {
-                    if (currentDay <= today) {
-                        selectDate(i);
-                    } else {
-                        alert("لا يمكنك تحديد يوم في المستقبل.");
-                    }
-                };
-                calendarDiv.appendChild(dayDiv);
-            }
-        }
-
-        function selectDate(day) {
-            let allDays = document.querySelectorAll(".calendar div");
-            allDays.forEach(dayDiv => dayDiv.classList.remove("selected"));
-            selectedDate = new Date(new Date().getFullYear(), new Date().getMonth(), day);
-            let selectedDayDiv = allDays[day - 1];
-            selectedDayDiv.classList.add("selected");
-        }
-
-        // Get saved mood for a particular day
-        function getSavedMood(day) {
-            let moods = JSON.parse(localStorage.getItem("moods")) || [];
-            let date = new Date(new Date().getFullYear(), new Date().getMonth(), day).toLocaleDateString();
-            for (let mood of moods) {
-                if (mood.startsWith(date)) {
-                    return mood.split(":")[1].split("-")[0].trim();
-                }
-            }
-            return null;
-        }
-
-        var swiper = new Swiper('.swiper', {
-            slidesPerView: 1,
+        let selectedMood = moods[0].emoji;
+        
+        // تهيئة السوايبر
+        const swiper = new Swiper('.swiper-container', {
+            slidesPerView: 'auto',
             centeredSlides: true,
+            spaceBetween: 20,
             loop: true,
-            spaceBetween: 10,
-            pagination: {
-                el: ".swiper-pagination",
-                clickable: true,
-            },
             on: {
-                slideChange: function () {
-                    selectedMood = emojis[this.realIndex];
+                slideChange: function() {
+                    selectedMood = moods[this.realIndex].emoji;
                 }
             }
         });
-
+        
+        // تحديث عنوان الشهر
+        function updateMonthTitle() {
+            const monthNames = ["يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو",
+                              "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"];
+            document.getElementById("monthTitle").textContent = 
+                `${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
+        }
+        
+        // تغيير الشهر
+        function changeMonth(offset) {
+            currentDate.setMonth(currentDate.getMonth() + offset);
+            updateMonthTitle();
+            generateCalendar();
+        }
+        
+        // توليد التقويم
+        function generateCalendar() {
+            const calendar = document.getElementById("calendar");
+            // مسح أيام الشهر السابقة (تبقى عناوين الأيام)
+            while (calendar.children.length > 7) {
+                calendar.removeChild(calendar.lastChild);
+            }
+            
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const today = new Date();
+            
+            // إضافة أيام فارغة لمواءمة بداية الشهر
+            for (let i = 0; i < firstDay; i++) {
+                const emptyDay = document.createElement("div");
+                emptyDay.classList.add("calendar-day", "disabled");
+                calendar.appendChild(emptyDay);
+            }
+            
+            // إضافة أيام الشهر
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dayElement = document.createElement("div");
+                dayElement.classList.add("calendar-day");
+                dayElement.textContent = day;
+                
+                const date = new Date(year, month, day);
+                if (date > today) {
+                    dayElement.classList.add("disabled");
+                }
+                
+                // التحقق إذا كان هناك مزاج محفوظ لهذا اليوم
+                const savedMood = getSavedMood(date);
+                if (savedMood) {
+                    dayElement.classList.add("saved");
+                    dayElement.setAttribute("data-mood", savedMood);
+                }
+                
+                dayElement.addEventListener("click", function() {
+                    if (date <= today) {
+                        selectDate(dayElement, date);
+                    }
+                });
+                
+                calendar.appendChild(dayElement);
+            }
+        }
+        
+        // تحديد تاريخ
+        function selectDate(element, date) {
+            document.querySelectorAll(".calendar-day").forEach(day => {
+                day.classList.remove("selected");
+            });
+            
+            element.classList.add("selected");
+            selectedDate = date;
+            
+            // إذا كان هناك مزاج محفوظ، نعرضه في السوايبر
+            const savedMood = element.getAttribute("data-mood");
+            if (savedMood) {
+                const moodIndex = moods.findIndex(m => m.emoji === savedMood);
+                if (moodIndex !== -1) {
+                    swiper.slideToLoop(moodIndex);
+                }
+            }
+        }
+        
+        // الحصول على مزاج محفوظ
+        function getSavedMood(date) {
+            const moodsData = JSON.parse(localStorage.getItem("moods")) || {};
+            const dateKey = date.toISOString().split('T')[0];
+            return moodsData[dateKey]?.mood;
+        }
+        
+        // حفظ المزاج
         function saveMood() {
             if (!selectedDate) {
-                alert("من فضلك اختر يوم من التقويم.");
+                alert("الرجاء تحديد يوم من التقويم");
                 return;
             }
-
-            let reason = document.getElementById("reason").value;
-            let entry = `${selectedDate.toLocaleDateString()}: ${selectedMood} - ${reason}`;
             
-            let moods = JSON.parse(localStorage.getItem("moods")) || [];
-            moods.push(entry);
-            localStorage.setItem("moods", JSON.stringify(moods));
-            generateCalendar(); // Re-generate calendar to show saved mood
+            const reason = document.getElementById("reason").value;
+            const dateKey = selectedDate.toISOString().split('T')[0];
+            
+            let moodsData = JSON.parse(localStorage.getItem("moods")) || {};
+            moodsData[dateKey] = {
+                mood: selectedMood,
+                reason: reason,
+                date: dateKey
+            };
+            
+            localStorage.setItem("moods", JSON.stringify(moodsData));
+            
+            // تحديث التقويم لعرض المؤشر
+            generateCalendar();
+            
+            alert("تم حفظ شعورك لهذا اليوم بنجاح!");
         }
-
-        // Generate the calendar on load
-        generateCalendar();
+        
+        // تهيئة الصفحة
+        function init() {
+            updateMonthTitle();
+            generateCalendar();
+            
+            // تحديد اليوم الحالي تلقائياً
+            const today = new Date();
+            if (currentDate.getMonth() === today.getMonth() && currentDate.getFullYear() === today.getFullYear()) {
+                const dayElements = document.querySelectorAll(".calendar-day");
+                const todayElement = Array.from(dayElements).find(el => 
+                    parseInt(el.textContent) === today.getDate() && !el.classList.contains("disabled"));
+                
+                if (todayElement) {
+                    selectDate(todayElement, today);
+                }
+            }
+        }
+        
+        // بدء التطبيق
+        window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
