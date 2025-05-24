@@ -271,104 +271,157 @@
 
     <script>
         // دالة للحصول على الوقت الحالي بصيغة مناسبة
-        function getCurrentTime() {
-            const now = new Date();
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            return `${hours}:${minutes}`;
-        }
+ // دالة للحصول على الوقت الحالي بصيغة مناسبة
+function getCurrentTime() {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+}
 
-        // دالة لإضافة رسالة إلى الدردشة
-        function addMessage(message, sender) {
-            const chatContainer = document.getElementById("chatContainer");
-        
-        async function getBotReply(userMessage) {
-            const apiUrl = 'https://api.deepseek.com/chat/completions'; 
-            const apiKey = 'sk-ae2b9e0bdac946e0afc4433df4802b5a'; // استبدل بمفتاح API الصحيح
+// دالة لإضافة رسالة إلى الدردشة
+function addMessage(message, sender) {
+    const chatContainer = document.getElementById("chatContainer");
+    
+    // إنشاء عنصر الرسالة
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add("chat-message", sender === 'user' ? "user-message" : "bot-message");
+    
+    // إضافة محتوى الرسالة
+    messageDiv.innerHTML = `
+        ${message}
+        <div class="message-time">${getCurrentTime()}</div>
+    `;
+    
+    // إضافة الرسالة إلى الدردشة
+    chatContainer.appendChild(messageDiv);
+    
+    // التمرير إلى الأسفل
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+}
 
-            try {
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`,
+// دالة لمحاكاة تأثير الكتابة
+function showTypingIndicator() {
+    const chatContainer = document.getElementById("chatContainer");
+    
+    // إنشاء مؤشر الكتابة
+    const typingIndicator = document.createElement("div");
+    typingIndicator.className = "typing-indicator";
+    typingIndicator.id = "typingIndicator";
+    typingIndicator.innerHTML = `
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+    `;
+    
+    chatContainer.appendChild(typingIndicator);
+    chatContainer.scrollTop = chatContainer.scrollHeight;
+    return typingIndicator;
+}
+
+// دالة لإخفاء مؤشر الكتابة
+function hideTypingIndicator() {
+    const typingIndicator = document.getElementById("typingIndicator");
+    if (typingIndicator) {
+        typingIndicator.remove();
+    }
+}
+
+// دالة للحصول على رد من نموذج الذكاء الاصطناعي
+async function getBotReply(userMessage) {
+    const apiUrl = 'https://api.deepseek.com/chat/completions';
+    const apiKey = 'sk-ae2b9e0bdac946e0afc4433df4802b5a'; // يجب استبدال هذا بالمفتاح الفعلي
+    
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({
+                model: "deepseek-chat",
+                messages: [
+                    { 
+                        "role": "system", 
+                        "content": "أنت مساعد ذكي يتحدث العربية. كن ودوداً ومفيداً في إجاباتك."
                     },
-                    body: JSON.stringify({
-                        model: "deepseek-chat",
-                        messages: [
-                            { "role": "system", "content": "أنت مساعد ذكي جاهز لمساعدة المستخدم." },
-                            { "role": "user", "content": userMessage }
-                        ],
-                        stream: false
-                    }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('فشل في الاتصال بـ API');
-                }
-
-                const data = await response.json();
-                return data.choices[0].message.content || "لم أفهم السؤال، حاول مرة أخرى!";
-            } catch (error) {
-                console.error('حدث خطأ:', error);
-                return 'عذرًا، حدث خطأ أثناء التواصل مع البوت.';
-            }
-        }
-
-        function addMessage(message, sender) {
-            const chatContainer = document.getElementById("chatContainer");
-            const messageDiv = document.createElement("div");
-
-            messageDiv.classList.add("chat-message", sender === 'user' ? "user-message" : "bot-message");
-
-            if (sender === 'bot') {
-                typeMessage(message, messageDiv);
-            } else {
-                messageDiv.textContent = message;
-            }
-
-            chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        function typeMessage(text, element) {
-            let index = 0;
-            element.textContent = "";
-
-            function typeNextLetter() {
-                if (index < text.length) {
-                    element.textContent += text.charAt(index);
-                    index++;
-                    setTimeout(typeNextLetter, 30);
-                }
-            }
-
-            typeNextLetter();
-        }
-
-        async function sendMessage() {
-            const userInput = document.getElementById("userInput");
-            const message = userInput.value.trim();
-            if (message) {
-                addMessage(message, 'user');
-                userInput.value = '';
-
-                const botReply = await getBotReply(message);
-                addMessage(botReply, 'bot');
-            }
-        }
-
-        function goBack() {
-            window.location.href = "index.html";
-        }
-
-        document.getElementById("sendButton").addEventListener("click", sendMessage);
-        document.getElementById("userInput").addEventListener("keypress", function (e) {
-            if (e.key === "Enter") {
-                sendMessage();
-            }
+                    { 
+                        "role": "user", 
+                        "content": userMessage 
+                    }
+                ],
+                temperature: 0.7,
+                max_tokens: 500,
+                stream: false
+            }),
         });
-        document.getElementById("backButton").addEventListener("click", goBack);
+
+        if (!response.ok) {
+            throw new Error(`خطأ في API: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.choices[0].message.content.trim();
+    } catch (error) {
+        console.error('حدث خطأ في الاتصال:', error);
+        return "عذراً، حدث خطأ أثناء معالجة طلبك. يرجى المحاولة مرة أخرى لاحقاً.";
+    }
+}
+
+// دالة إرسال الرسالة
+async function sendMessage() {
+    const userInput = document.getElementById("userInput");
+    const message = userInput.value.trim();
+    
+    if (!message) return;
+    
+    // إضافة رسالة المستخدم
+    addMessage(message, 'user');
+    userInput.value = '';
+    
+    // إظهار مؤشر الكتابة
+    showTypingIndicator();
+    
+    try {
+        // الحصول على رد البوت
+        const botReply = await getBotReply(message);
+        
+        // إخفاء مؤشر الكتابة وإضافة الرد
+        hideTypingIndicator();
+        addMessage(botReply, 'bot');
+    } catch (error) {
+        hideTypingIndicator();
+        addMessage("حدث خطأ غير متوقع أثناء التواصل مع البوت.", 'bot');
+        console.error("Error in sendMessage:", error);
+    }
+}
+
+// دالة العودة للصفحة الرئيسية
+function goBack() {
+    window.location.href = "index.html";
+}
+
+// تهيئة الصفحة عند التحميل
+function initChat() {
+    // إضافة رسالة ترحيبية
+    addMessage("مرحباً! أنا البوت المساعد. كيف يمكنني مساعدتك اليوم؟", 'bot');
+    
+    // إضافة مستمعي الأحداث
+    document.getElementById("sendButton").addEventListener("click", sendMessage);
+    document.getElementById("userInput").addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+            sendMessage();
+        }
+    });
+    document.getElementById("backButton").addEventListener("click", goBack);
+    
+    // التركيز على حقل الإدخال
+    document.getElementById("userInput").focus();
+}
+
+// بدء التطبيق عند تحميل الصفحة
+window.addEventListener('DOMContentLoaded', initChat);
     </script>
 
 </body>
