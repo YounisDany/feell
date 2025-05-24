@@ -5,17 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>الدردشة مع البوت</title>
 
-    <!-- Bootstrap -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
-    <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Google Font Tajawal -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
 
     <style>
+        :root {
+            --primary-color: #6a5acd;
+            --secondary-color: #9370db;
+            --accent-color: #ff69b4;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+        }
+        
         body {
             font-family: 'Tajawal', sans-serif;
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             margin: 0;
             display: flex;
             flex-direction: column;
@@ -23,80 +29,129 @@
             overflow: hidden;
         }
 
-        /* الهيدر */
+        /* الهيدر المعدل */
         .header {
             display: flex;
             align-items: center;
-            justify-content: start;
-            background-color: #ff6f61;
+            justify-content: space-between;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
             padding: 15px;
-            font-size: 20px;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
         }
 
         .back-button {
-            background: none;
+            background: rgba(255, 255, 255, 0.2);
             border: none;
             color: white;
-            font-size: 24px;
-            margin-right: 15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
 
-        /* كونتينر المحادثة */
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-3px);
+        }
+
+        /* كونتينر المحادثة المعدل */
         .chat-container {
             flex-grow: 1;
             overflow-y: auto;
-            padding: 15px;
-            background-color: #fff;
+            padding: 80px 15px 100px;
             width: 100%;
             display: flex;
             flex-direction: column;
-            height: calc(100vh - 130px); /* طرح ارتفاع الهيدر والشريط السفلي */
+            background-color: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
         }
 
         .chat-message {
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 10px;
-            max-width: 70%;
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 18px;
+            max-width: 80%;
             font-size: 16px;
-            white-space: pre-line;
+            line-height: 1.5;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .user-message {
-            background-color: #ff6f61;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
             align-self: flex-end;
+            border-bottom-right-radius: 5px;
         }
 
         .bot-message {
-            background-color: #e5e5e5;
-            color: black;
+            background-color: #f0f0f0;
+            color: var(--dark-color);
             align-self: flex-start;
+            border-bottom-left-radius: 5px;
         }
 
-        /* شريط الإدخال */
+        .message-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            margin-top: 5px;
+            text-align: left;
+        }
+
+        .user-message .message-time {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .bot-message .message-time {
+            color: rgba(0, 0, 0, 0.6);
+        }
+
+        /* شريط الإدخال المعدل */
         .input-container {
             display: flex;
             align-items: center;
-            padding: 10px;
+            padding: 15px;
             background-color: #fff;
-            border-top: 1px solid #ccc;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
             position: fixed;
             bottom: 0;
             left: 0;
             width: 100%;
-            justify-content: space-between;
+            z-index: 1000;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
         }
 
         .input-container input {
             flex-grow: 1;
-            padding: 12px;
-            border-radius: 20px;
-            border: 1px solid #ccc;
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
             font-size: 16px;
             margin: 0 10px;
+            transition: all 0.3s ease;
+            background-color: #f8f9fa;
+        }
+
+        .input-container input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(106, 90, 205, 0.2);
         }
 
         .button {
@@ -109,48 +164,124 @@
             font-size: 20px;
             border: none;
             cursor: pointer;
-            transition: 0.3s;
+            transition: all 0.3s ease;
         }
 
         .send-button {
-            background-color: #ff6f61;
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
         }
 
         .send-button:hover {
-            background-color: #e85a4f;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .send-button:active {
+            transform: translateY(0);
         }
 
         /* تأثير الكتابة */
-        @keyframes typing {
-            from { width: 0; }
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background-color: #f0f0f0;
+            border-radius: 18px;
+            align-self: flex-start;
+            margin: 8px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #666;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+
+        /* تصميم متجاوب */
+        @media (max-width: 768px) {
+            .chat-container {
+                padding: 70px 10px 90px;
+            }
+            
+            .chat-message {
+                max-width: 85%;
+                padding: 10px 14px;
+                font-size: 15px;
+            }
+            
+            .input-container {
+                padding: 10px;
+            }
+            
+            .input-container input {
+                padding: 10px 15px;
+                font-size: 15px;
+            }
+            
+            .button {
+                width: 45px;
+                height: 45px;
+                font-size: 18px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- الهيدر -->
+    <!-- الهيدر المعدل -->
     <div class="header">
         <button class="back-button" id="backButton">
-            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-right"></i>
         </button>
-        الدردشة مع البوت
+        <span>الدردشة مع البوت</span>
+        <div style="width: 40px;"></div> <!-- عنصر فارغ للمحاذاة -->
     </div>
 
     <!-- كونتينر المحادثة -->
     <div class="chat-container" id="chatContainer">
-        <!-- رسائل المحادثة ستظهر هنا -->
+        <!-- رسائل البوت الترحيبية -->
+        <div class="chat-message bot-message animate__animated animate__fadeIn">
+            مرحباً! أنا البوت المساعد. كيف يمكنني مساعدتك اليوم؟
+            <div class="message-time">الآن</div>
+        </div>
     </div>
 
     <!-- شريط الإدخال -->
     <div class="input-container">
-        <input type="text" id="userInput" placeholder="أدخل رسالتك هنا..." />
+        <input type="text" id="userInput" placeholder="اكتب رسالتك هنا..." autocomplete="off" />
         <button class="button send-button" id="sendButton">
             <i class="fas fa-paper-plane"></i>
         </button>
     </div>
 
     <script>
+        // دالة للحصول على الوقت الحالي بصيغة مناسبة
+        function getCurrentTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
+        }
+
+        // دالة لإضافة رسالة إلى الدردشة
+        function addMessage(message, sender) {
+            const chatContainer = document.getElementById("chatContainer");
+        
         async function getBotReply(userMessage) {
             const apiUrl = 'https://api.deepseek.com/chat/completions'; 
             const apiKey = 'sk-ae2b9e0bdac946e0afc4433df4802b5a'; // استبدل بمفتاح API الصحيح
