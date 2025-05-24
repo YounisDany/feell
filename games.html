@@ -463,39 +463,16 @@
             
             currentQuestion++;
             
-            // الانتقال للسؤال التالي بعد 1.5 ثانية
-            setTimeout(() => {
-                if (currentQuestion > totalQuestions) {
-                    endGame();
-                } else {
-                    gameActive = true;
-                    getRandomEmoji();
-                }
-            }, 1500);
-        }
-
-        // إنشاء تأثير أمطار الإيموجي
-        function createEmojiRain(emoji) {
-            const emojiCount = 20;
-            
-            for (let i = 0; i < emojiCount; i++) {
-                setTimeout(() => {
-                    const fallingEmoji = document.createElement('div');
-                    fallingEmoji.className = 'falling-emoji';
-                    fallingEmoji.textContent = emoji;
-                    fallingEmoji.style.left = `${Math.random() * 100}vw`;
-                    fallingEmoji.style.animation = `fall ${Math.random() * 2 + 1}s linear forwards`;
-                    fallingEmoji.style.fontSize = `${Math.random() * 30 + 20}px`;
-                    document.body.appendChild(fallingEmoji);
-                    
-                    setTimeout(() => {
-                        fallingEmoji.remove();
-                    }, 3000);
-                }, i * 100);
+            // الانتقال الفوري للسؤال التالي بدون تأخير
+            if (currentQuestion > totalQuestions) {
+                endGame();
+            } else {
+                gameActive = true;
+                getRandomEmoji();
             }
         }
 
-        // بدء المؤقت
+        // بدء المؤقت (الوظيفة المعدلة)
         function startTimer() {
             timer = setInterval(() => {
                 timeLeft--;
@@ -510,18 +487,17 @@
                     
                     currentQuestion++;
                     
-                    // الانتقال للسؤال التالي بعد 1.5 ثانية
-                    setTimeout(() => {
-                        if (currentQuestion > totalQuestions) {
-                            endGame();
-                        } else {
-                            gameActive = true;
-                            getRandomEmoji();
-                        }
-                    }, 1500);
+                    // الانتقال الفوري للسؤال التالي عند انتهاء الوقت
+                    if (currentQuestion > totalQuestions) {
+                        endGame();
+                    } else {
+                        gameActive = true;
+                        getRandomEmoji();
+                    }
                 }
             }, 1000);
         }
+
 
         // إعادة تعيين المؤقت
         function resetTimer() {
