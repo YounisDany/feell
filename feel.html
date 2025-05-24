@@ -146,10 +146,7 @@
 
         /* Calendar */
         .calendar-container {
-            flex: 1;
-            overflow-y: auto;
             padding: 0 16px;
-            margin-bottom: 10px;
         }
 
         .calendar {
@@ -211,7 +208,7 @@
         .reason-selector {
             background: white;
             padding: 16px;
-            margin: 0 16px 16px;
+            margin: 0 16px;
             border-radius: var(--border-radius);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
@@ -251,8 +248,49 @@
             box-shadow: 0 4px 12px rgba(94, 114, 228, 0.2);
         }
 
-        .save-btn:active {
-            transform: translateY(0);
+        /* Saved Entries List */
+        .entries-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 16px;
+            margin: 10px 0;
+        }
+
+        .entries-title {
+            font-weight: 600;
+            color: var(--dark);
+            padding: 8px 0;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 10px;
+        }
+
+        .entry-item {
+            background: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .entry-emoji {
+            font-size: 1.8rem;
+            margin-left: 10px;
+        }
+
+        .entry-details {
+            flex: 1;
+        }
+
+        .entry-date {
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .entry-reason {
+            color: #718096;
+            font-size: 0.9rem;
         }
 
         /* Bottom Navigation */
@@ -380,6 +418,12 @@
         <button class="save-btn" onclick="saveMood()">
             <i class="fas fa-save"></i> حفظ الشعور
         </button>
+    </div>
+
+    <!-- Saved Entries -->
+    <div class="entries-container">
+        <div class="entries-title">المشاعر المحفوظة</div>
+        <div id="entriesList"></div>
     </div>
 
     <!-- Bottom Navigation -->
@@ -534,6 +578,46 @@
             return moodsData[dateKey]?.mood;
         }
 
+        // عرض المشاعر المحفوظة
+        function displaySavedEntries() {
+            const entriesList = document.getElementById("entriesList");
+            entriesList.innerHTML = "";
+            
+            const moodsData = JSON.parse(localStorage.getItem("moods")) || {};
+            const entries = Object.values(moodsData);
+            
+            // ترتيب المحفوظات من الأحدث إلى الأقدم
+            entries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            if (entries.length === 0) {
+                entriesList.innerHTML = '<div style="text-align: center; padding: 20px; color: #718096;">لا توجد مشاعر محفوظة بعد</div>';
+                return;
+            }
+            
+            entries.forEach(entry => {
+                const mood = moods.find(m => m.emoji === entry.mood);
+                const date = new Date(entry.date);
+                const dateStr = date.toLocaleDateString('ar-AR', {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                
+                const entryElement = document.createElement("div");
+                entryElement.className = "entry-item";
+                entryElement.innerHTML = `
+                    <div class="entry-emoji">${entry.mood}</div>
+                    <div class="entry-details">
+                        <div class="entry-date">${dateStr}</div>
+                        <div class="entry-reason">${mood?.label || 'غير معروف'} - ${entry.reason}</div>
+                    </div>
+                `;
+                
+                entriesList.appendChild(entryElement);
+            });
+        }
+
         // حفظ المزاج
         function saveMood() {
             if (!selectedDate) {
@@ -554,8 +638,9 @@
             
             localStorage.setItem("moods", JSON.stringify(moodsData));
             
-            // تحديث التقويم لعرض المؤشر
+            // تحديث التقويم وعرض المحفوظات
             generateCalendar();
+            displaySavedEntries();
             
             showAlert("تم حفظ شعورك لهذا اليوم بنجاح!", "success");
         }
@@ -571,6 +656,7 @@
             initSwiper();
             updateMonthTitle();
             generateCalendar();
+            displaySavedEntries();
             
             // تحديد اليوم الحالي تلقائياً إذا كان في الشهر المعروض
             const today = new Date();
