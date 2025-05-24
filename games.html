@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>لعبة الإيموجي - عبر عن مشاعرك</title>
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://code.responsivevoice.org/responsivevoice.js?key=iQqyDrUh"></script>
-
     <style>
         :root {
             --primary-color: #6a5acd;
@@ -88,11 +86,6 @@
             background-color: rgba(255, 255, 255, 0.3);
         }
         
-        .bottom-nav a:hover i {
-            transform: scale(1.2);
-            color: var(--accent-color);
-        }
-        
         .game-container {
             margin-top: 60px;
             margin-bottom: 80px;
@@ -112,13 +105,11 @@
             backdrop-filter: blur(10px);
             max-width: 500px;
             width: 100%;
-            animation: fadeInUp 0.5s ease-out;
         }
         
         .emoji {
             font-size: 6rem;
             margin: 20px 0;
-            transition: all 0.3s ease;
             animation: pulse 2s infinite;
         }
         
@@ -149,10 +140,6 @@
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
         
-        .options button:active {
-            transform: translateY(1px);
-        }
-        
         .result {
             margin-top: 20px;
             font-size: 1.3rem;
@@ -181,76 +168,22 @@
             flex: 1;
         }
         
-        /* تأثيرات الحركة */
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
         
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            50% { transform: translateX(5px); }
-            75% { transform: translateX(-5px); }
-            100% { transform: translateX(0); }
-        }
-        
-        /* تأثيرات النجاح والفشل */
         .correct {
             color: #28a745;
             background-color: rgba(40, 167, 69, 0.1);
-            animation: bounce 0.5s ease;
         }
         
         .wrong {
             color: #dc3545;
             background-color: rgba(220, 53, 69, 0.1);
-            animation: shake 0.5s ease;
         }
         
-        /* تأثير الصورة الكاملة */
-        .fullscreen-emoji {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 1000;
-            opacity: 0;
-            pointer-events: none;
-        }
-        
-        .fullscreen-emoji span {
-            font-size: 10rem;
-            animation: pulse 2s infinite;
-        }
-        
-        /* تأثير الأمطار */
-        .falling-emoji {
-            position: fixed;
-            top: -100px;
-            z-index: 100;
-            font-size: 2rem;
-            animation-timing-function: linear;
-            animation-fill-mode: forwards;
-        }
-        
-        /* تصميم متجاوب */
         @media (max-width: 768px) {
             .emoji {
                 font-size: 4rem;
@@ -261,80 +194,54 @@
                 font-size: 1rem;
                 min-width: 100px;
             }
-            
-            .result {
-                font-size: 1.1rem;
-            }
-            
-            .score, .timer, .question-count {
-                font-size: 0.9rem;
-                padding: 6px 10px;
-            }
-            
-            .bottom-nav a span {
-                font-size: 10px;
-            }
-            
-            .bottom-nav a i {
-                font-size: 18px;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- Header بدون أزرار -->
     <div class="header">
         <h4 style="color: white; margin: 0;">لعبة الإيموجي</h4>
     </div>
 
-    <!-- محتوى اللعبة -->
     <div class="game-container">
         <div class="emoji-game">
             <div class="score-container">
-                <div class="score animate__animated animate__fadeIn" id="score">النقاط: 0</div>
-                <div class="question-count animate__animated animate__fadeIn" id="questionCount">السؤال: 1/10</div>
-                <div class="timer animate__animated animate__fadeIn" id="timer">⏱️ 10 ث</div>
+                <div class="score" id="score">النقاط: 0</div>
+                <div class="question-count" id="questionCount">السؤال: 1/10</div>
+                <div class="timer" id="timer">⏱️ 10 ث</div>
             </div>
             
-            <div class="emoji animate__animated animate__bounceIn" id="emoji">😊</div>
+            <div class="emoji" id="emoji">😊</div>
             
-            <div class="options" id="options">
-                <!-- سيتم ملء الخيارات هنا ديناميكيًا -->
-            </div>
+            <div class="options" id="options"></div>
             
-            <div class="result animate__animated" id="result"></div>
+            <div class="result" id="result"></div>
         </div>
     </div>
 
-    <!-- تأثير الصورة الكاملة -->
-    <div id="fullscreenEmoji" class="fullscreen-emoji"></div>
-
-    <!-- Bottom navigation bar -->
     <nav class="bottom-nav">
-        <a href="index.html" class="animate__animated animate__fadeIn">
+        <a href="index.html">
             <i class="fas fa-home"></i>
             <span>الرئيسية</span>
         </a>
-        <a href="draw.html" class="animate__animated animate__fadeIn">
+        <a href="draw.html">
             <i class="fas fa-paint-brush"></i>
             <span>ارسم مشاعرك</span>
         </a>
-        <a href="chat.html" class="animate__animated animate__fadeIn">
+        <a href="chat.html">
             <i class="fas fa-comments"></i>
             <span>الدردشة</span>
         </a>
-        <a href="games.html" class="active animate__animated animate__fadeIn">
+        <a href="games.html" class="active">
             <i class="fas fa-gamepad"></i>
             <span>الألعاب</span>
         </a>
-        <a href="feel.html" class="animate__animated animate__fadeIn">
+        <a href="feel.html">
             <i class="fas fa-smile"></i>
             <span>شعورك</span>
         </a>
     </nav>
 
     <script>
-        // قائمة الإيموجيات والمشاعر المرتبطة بها
         const emojis = [
             { emoji: "😊", feeling: "سعيد" },
             { emoji: "😢", feeling: "حزين" },
@@ -350,45 +257,22 @@
             { emoji: "😇", feeling: "طيب" },
             { emoji: "🤪", feeling: "مضحك" },
             { emoji: "😤", feeling: "منفعل" },
-            { emoji: "🥺", feeling: "توسلي" },
-            { emoji: "😨", feeling: "قلق" },
-            { emoji: "😵", feeling: "دوار" },
-            { emoji: "🤒", feeling: "مريض" },
-            { emoji: "🤢", feeling: "غثيان" },
-            { emoji: "😈", feeling: "مشاغب" }
+            { emoji: "🥺", feeling: "توسلي" }
         ];
 
         let currentEmoji;
         let score = 0;
         let timeLeft = 10;
         let timer;
-        let gameActive = true;
         let currentQuestion = 1;
         const totalQuestions = 10;
         let usedEmojis = [];
 
-        // عرض إيموجي كامل الشاشة
-        function showFullscreenEmoji(emoji) {
-            const fullscreen = document.getElementById('fullscreenEmoji');
-            fullscreen.innerHTML = `<span>${emoji}</span>`;
-            fullscreen.style.opacity = '1';
-            fullscreen.style.animation = 'fadeInOut 1.5s forwards';
-            
-            setTimeout(() => {
-                fullscreen.style.opacity = '0';
-            }, 1500);
-        }
-
-        // اختيار إيموجي عشوائي (بدون تكرار حتى تنتهي جميع الإيموجيات)
         function getRandomEmoji() {
-            if (!gameActive) return;
-            
-            // إذا استخدمنا جميع الإيموجيات، نعيد القائمة من جديد
             if (usedEmojis.length === emojis.length) {
                 usedEmojis = [];
             }
             
-            // اختيار إيموجي لم يستخدم بعد
             let availableEmojis = emojis.filter(emoji => !usedEmojis.includes(emoji.emoji));
             if (availableEmojis.length === 0) {
                 availableEmojis = [...emojis];
@@ -399,21 +283,12 @@
             currentEmoji = availableEmojis[randomIndex];
             usedEmojis.push(currentEmoji.emoji);
             
-            const emojiElement = document.getElementById("emoji");
-            
-            emojiElement.classList.add('animate__animated', 'animate__flipInY');
-            setTimeout(() => {
-                emojiElement.textContent = currentEmoji.emoji;
-                emojiElement.classList.remove('animate__flipInY');
-            }, 300);
-            
-            document.getElementById("result").textContent = "";
+            document.getElementById("emoji").textContent = currentEmoji.emoji;
             document.getElementById("questionCount").textContent = `السؤال: ${currentQuestion}/${totalQuestions}`;
             updateOptions();
             resetTimer();
         }
 
-        // إنشاء خيارات عشوائية
         function updateOptions() {
             const optionsContainer = document.getElementById("options");
             optionsContainer.innerHTML = "";
@@ -428,51 +303,39 @@
 
             options.sort(() => Math.random() - 0.5);
 
-            options.forEach((option, index) => {
+            options.forEach(option => {
                 const button = document.createElement("button");
                 button.textContent = option;
-                button.classList.add('animate__animated', 'animate__fadeInUp');
-                button.style.animationDelay = `${index * 0.1}s`;
                 button.onclick = () => checkAnswer(option);
                 optionsContainer.appendChild(button);
             });
         }
 
-        // التحقق من الإجابة
         function checkAnswer(answer) {
-            if (!gameActive) return;
-            gameActive = false;
             clearInterval(timer);
             
             const resultElement = document.getElementById("result");
-            const emojiElement = document.getElementById("emoji");
             
             if (answer === currentEmoji.feeling) {
                 resultElement.textContent = "إجابة صحيحة! 🎉";
-                resultElement.className = "result correct animate__animated animate__bounce";
+                resultElement.className = "result correct";
                 score++;
-                document.getElementById("score").textContent = `النقاط: ${score}`;
-                showFullscreenEmoji(currentEmoji.emoji);
-                createEmojiRain(currentEmoji.emoji);
-                speakText("إجابة صحيحة! " + currentEmoji.feeling);
             } else {
                 resultElement.textContent = `إجابة خاطئة! الإجابة الصحيحة هي: ${currentEmoji.feeling} ❌`;
-                resultElement.className = "result wrong animate__animated animate__shakeX";
-                speakText("إجابة خاطئة! الإجابة الصحيحة هي " + currentEmoji.feeling);
+                resultElement.className = "result wrong";
             }
+            
+            document.getElementById("score").textContent = `النقاط: ${score}`;
             
             currentQuestion++;
             
-            // الانتقال الفوري للسؤال التالي بدون تأخير
             if (currentQuestion > totalQuestions) {
                 endGame();
             } else {
-                gameActive = true;
                 getRandomEmoji();
             }
         }
 
-        // بدء المؤقت (الوظيفة المعدلة)
         function startTimer() {
             timer = setInterval(() => {
                 timeLeft--;
@@ -480,26 +343,20 @@
                 
                 if (timeLeft <= 0) {
                     clearInterval(timer);
-                    const resultElement = document.getElementById("result");
-                    resultElement.textContent = "انتهى الوقت! ⏰";
-                    resultElement.className = "result wrong animate__animated animate__shakeX";
-                    speakText("انتهى الوقت!");
+                    document.getElementById("result").textContent = "انتهى الوقت! ⏰";
+                    document.getElementById("result").className = "result wrong";
                     
                     currentQuestion++;
                     
-                    // الانتقال الفوري للسؤال التالي عند انتهاء الوقت
                     if (currentQuestion > totalQuestions) {
                         endGame();
                     } else {
-                        gameActive = true;
                         getRandomEmoji();
                     }
                 }
             }, 1000);
         }
 
-
-        // إعادة تعيين المؤقت
         function resetTimer() {
             clearInterval(timer);
             timeLeft = 10;
@@ -507,80 +364,20 @@
             startTimer();
         }
 
-        // إنهاء اللعبة
         function endGame() {
-            gameActive = false;
-            clearInterval(timer);
-            
-            const emojiGame = document.querySelector('.emoji-game');
-            emojiGame.innerHTML = `
-                <h2 class="animate__animated animate__fadeIn">انتهت اللعبة!</h2>
-                <div class="final-score animate__animated animate__bounceIn" style="font-size: 2rem; margin: 20px 0;">
+            document.querySelector('.emoji-game').innerHTML = `
+                <h2>انتهت اللعبة!</h2>
+                <div style="font-size: 2rem; margin: 20px 0;">
                     النقاط النهائية: ${score}/${totalQuestions}
                 </div>
-                <div class="animate__animated animate__fadeIn" style="margin-bottom: 20px;">
-                    ${getResultMessage(score)}
-                </div>
-                <button id="restartBtn" class="btn btn-primary animate__animated animate__fadeInUp" style="padding: 12px 30px; font-size: 1.2rem; border-radius: 50px;">
+                <button onclick="window.location.reload()" style="padding: 12px 30px; font-size: 1.2rem; border-radius: 50px; background: linear-gradient(to right, #6a5acd, #9370db); color: white; border: none; cursor: pointer;">
                     <i class="fas fa-redo"></i> لعب مرة أخرى
                 </button>
             `;
-            
-            document.getElementById('restartBtn').addEventListener('click', restartGame);
-            
-            // عرض تأثير النجاح إذا كانت النتيجة جيدة
-            if (score >= totalQuestions * 0.7) {
-                createEmojiRain("🎉");
-                createEmojiRain("🏆");
-                showFullscreenEmoji("🥳");
-                speakText(`مبروك! حصلت على ${score} من ${totalQuestions}`);
-            } else {
-                showFullscreenEmoji("👍");
-                speakText(`حصلت على ${score} من ${totalQuestions}. حاول مرة أخرى!`);
-            }
         }
 
-        // رسالة النتيجة النهائية
-        function getResultMessage(score) {
-            const percentage = score / totalQuestions;
-            
-            if (percentage >= 0.9) return "ممتاز! أنت خبير في فهم المشاعر 🏆";
-            if (percentage >= 0.7) return "جيد جداً! لديك مهارة في فهم المشاعر 😊";
-            if (percentage >= 0.5) return "ليس سيئاً! يمكنك تحسين نتائجك 💪";
-            return "حاول مرة أخرى! ستصبح أفضل مع الممارسة 👍";
-        }
-
-        // إعادة تشغيل اللعبة
-        function restartGame() {
-            score = 0;
-            currentQuestion = 1;
-            usedEmojis = [];
-            gameActive = true;
-            
-            const emojiGame = document.querySelector('.emoji-game');
-            emojiGame.innerHTML = `
-                <div class="score-container">
-                    <div class="score animate__animated animate__fadeIn" id="score">النقاط: 0</div>
-                    <div class="question-count animate__animated animate__fadeIn" id="questionCount">السؤال: 1/10</div>
-                    <div class="timer animate__animated animate__fadeIn" id="timer">⏱️ 10 ث</div>
-                </div>
-                
-                <div class="emoji animate__animated animate__bounceIn" id="emoji">😊</div>
-                
-                <div class="options" id="options"></div>
-                
-                <div class="result animate__animated" id="result"></div>
-            `;
-            
-            getRandomEmoji();
-        }
-
-        // تهيئة الصفحة عند التحميل
         window.onload = () => {
             getRandomEmoji();
-            
-            // تمييز الصفحة الحالية في القائمة السفلية
-            document.querySelector(`.bottom-nav a[href="games.html"]`).classList.add('active');
         };
     </script>
 </body>
