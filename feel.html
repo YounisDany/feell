@@ -323,6 +323,62 @@
             margin-bottom: 3px;
         }
 
+        /* Alert Styles */
+        .custom-alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            transform: translateY(-100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .custom-alert.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .custom-alert.success {
+            border-right: 5px solid var(--success);
+        }
+
+        .custom-alert.error {
+            border-right: 5px solid var(--accent);
+        }
+
+        .custom-alert i {
+            margin-left: 10px;
+            font-size: 1.5rem;
+        }
+
+        .custom-alert.success i {
+            color: var(--success);
+        }
+
+        .custom-alert.error i {
+            color: var(--accent);
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-close {
+            background: none;
+            border: none;
+            color: #718096;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
         /* Responsive Adjustments */
         @media (max-width: 350px) {
             .mood-emoji {
@@ -446,6 +502,15 @@
         </a>
     </nav>
 
+    <!-- Custom Alert -->
+    <div id="customAlert" class="custom-alert">
+        <i class="fas fa-check-circle"></i>
+        <div class="alert-content" id="alertMessage"></div>
+        <button class="alert-close" onclick="hideAlert()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
         // بيانات التطبيق
@@ -467,6 +532,7 @@
         let selectedDate = null;
         let selectedMood = moods[0].emoji;
         let swiperInstance = null;
+        let selectedDayElement = null;
 
         // تهيئة السوايبر
         function initSwiper() {
@@ -475,6 +541,7 @@
                 centeredSlides: true,
                 spaceBetween: 20,
                 loop: true,
+                initialSlide: 0,
                 on: {
                     slideChange: function() {
                         selectedMood = moods[this.realIndex].emoji;
@@ -536,10 +603,15 @@
                 }
                 
                 // التحقق إذا كان هناك مزاج محفوظ لهذا اليوم
-                const savedMood = getSavedMood(date);
-                if (savedMood) {
+                const savedEntry = getSavedEntry(date);
+                if (savedEntry) {
                     dayElement.classList.add("saved");
-                    dayElement.setAttribute("data-mood", savedMood);
+                    dayElement.setAttribute("data-entry", JSON.stringify(savedEntry));
+                    
+                    // إذا كان هذا اليوم هو المحدد حالياً، نعرض بياناته
+                    if (selectedDate && date.toDateString() === selectedDate.toDateString()) {
+                        displaySavedEntry(savedEntry);
+                    }
                 }
                 
                 dayElement.addEventListener("click", function() {
@@ -554,28 +626,45 @@
 
         // تحديد تاريخ
         function selectDate(element, date) {
+            // إزالة التحديد من جميع الأيام
             document.querySelectorAll(".calendar-day").forEach(day => {
                 day.classList.remove("selected");
             });
             
+            // إضافة التحديد للعنصر الجديد
             element.classList.add("selected");
             selectedDate = date;
+            selectedDayElement = element;
             
-            // إذا كان هناك مزاج محفوظ، نعرضه في السوايبر
-            const savedMood = element.getAttribute("data-mood");
-            if (savedMood) {
-                const moodIndex = moods.findIndex(m => m.emoji === savedMood);
-                if (moodIndex !== -1) {
-                    swiperInstance.slideToLoop(moodIndex);
-                }
+            // التحقق إذا كان هناك بيانات محفوظة لهذا اليوم
+            const entryData = element.getAttribute("data-entry");
+            if (entryData) {
+                const savedEntry = JSON.parse(entryData);
+                displaySavedEntry(savedEntry);
+            } else {
+                // إذا لم يكن هناك بيانات محفوظة، نعيد السوايبر إلى الوضع الافتراضي
+                swiperInstance.slideToLoop(0);
+                document.getElementById("reason").value = "العمل";
             }
         }
 
-        // الحصول على مزاج محفوظ
-        function getSavedMood(date) {
+        // عرض بيانات اليوم المحفوظة
+        function displaySavedEntry(entry) {
+            // البحث عن مؤشر المزاج المحفوظ
+            const moodIndex = moods.findIndex(m => m.emoji === entry.mood);
+            if (moodIndex !== -1) {
+                swiperInstance.slideToLoop(moodIndex);
+            }
+            
+            // تعيين السبب المحفوظ
+            document.getElementById("reason").value = entry.reason;
+        }
+
+        // الحصول على بيانات مزاج محفوظة
+        function getSavedEntry(date) {
             const moodsData = JSON.parse(localStorage.getItem("moods")) || {};
             const dateKey = date.toISOString().split('T')[0];
-            return moodsData[dateKey]?.mood;
+            return moodsData[dateKey];
         }
 
         // عرض المشاعر المحفوظة
@@ -621,7 +710,7 @@
         // حفظ المزاج
         function saveMood() {
             if (!selectedDate) {
-                showAlert("الرجاء تحديد يوم من التقويم");
+                showAlert("الرجاء تحديد يوم من التقويم", "error");
                 return;
             }
             
@@ -638,17 +727,46 @@
             
             localStorage.setItem("moods", JSON.stringify(moodsData));
             
-            // تحديث التقويم وعرض المحفوظات
-            generateCalendar();
+            // تحديث العنصر المحدد في التقويم
+            if (selectedDayElement) {
+                selectedDayElement.classList.add("saved");
+                selectedDayElement.setAttribute("data-entry", JSON.stringify(moodsData[dateKey]));
+            }
+            
+            // تحديث عرض المحفوظات
             displaySavedEntries();
             
             showAlert("تم حفظ شعورك لهذا اليوم بنجاح!", "success");
         }
 
-        // عرض رسالة تنبيه
-        function showAlert(message, type = "info") {
-            // يمكن استبدال هذا بتنفيذ أكثر تطوراً لعرض التنبيهات
-            alert(message);
+        // عرض رسالة تنبيه مخصصة
+        function showAlert(message, type = "success") {
+            const alert = document.getElementById("customAlert");
+            const alertMessage = document.getElementById("alertMessage");
+            
+            // تحديث النوع والرسالة
+            alert.className = `custom-alert ${type}`;
+            alertMessage.textContent = message;
+            
+            // تحديث الأيقونة حسب النوع
+            const icon = alert.querySelector("i");
+            if (type === "success") {
+                icon.className = "fas fa-check-circle";
+            } else {
+                icon.className = "fas fa-exclamation-circle";
+            }
+            
+            // عرض التنبيه
+            alert.classList.add("show");
+            
+            // إخفاء التنبيه تلقائياً بعد 3 ثواني
+            setTimeout(hideAlert, 3000);
+        }
+
+        // إخفاء رسالة التنبيه
+        function hideAlert() {
+            const alert = document.getElementById("customAlert");
+            alert.classList.remove("show");
         }
 
         // تهيئة الصفحة
